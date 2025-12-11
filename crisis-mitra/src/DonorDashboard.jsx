@@ -22,6 +22,7 @@ function DonorDashboard({
         { id: 3, bloodType: userBloodType, units: 3, hospital: 'Medical Centre', urgency: 'Critical' }
     ]
 
+    // Use incoming alerts from props, or default alerts if none provided
     const alerts = incomingAlerts.length > 0 ? incomingAlerts : defaultIncomingAlerts
 
     const handleAccept = (alert) => {
@@ -87,9 +88,19 @@ function DonorDashboard({
                                         <p><strong>Units Needed:</strong> {alert.units}</p>
                                         <p><strong>Location:</strong> {alert.hospital}</p>
                                     </div>
+                                    {userBloodType && alert.bloodType !== userBloodType && (
+                                        <div style={{ padding: '10px', backgroundColor: '#ffebee', borderRadius: '6px', marginBottom: '10px', color: '#c92a2a', fontSize: '13px', fontWeight: '600', textAlign: 'center' }}>
+                                            Blood type doesn't match
+                                        </div>
+                                    )}
                                     <button
                                         className="accept-btn"
                                         onClick={() => handleAccept(alert)}
+                                        disabled={userBloodType && alert.bloodType !== userBloodType}
+                                        style={{
+                                            opacity: userBloodType && alert.bloodType !== userBloodType ? 0.5 : 1,
+                                            cursor: userBloodType && alert.bloodType !== userBloodType ? 'not-allowed' : 'pointer'
+                                        }}
                                     >
                                         ✓ Accept
                                     </button>
