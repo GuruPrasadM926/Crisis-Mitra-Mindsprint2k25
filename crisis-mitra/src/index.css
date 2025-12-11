@@ -28,6 +28,7 @@ body {
   place-items: center;
   min-width: 320px;
   min-height: 100vh;
+  width: 100%;
 }
 
 h1 {
@@ -64,5 +65,49 @@ button:focus-visible {
   }
   button {
     background-color: #f9f9f9;
+  }
+}
+
+/* Smartphone/Mobile Devices - 320px to 480px */
+@media (max-width: 480px) {
+  body {
+    justify-content: flex-start;
+    padding: 20px 0;
+    width: 100%;
+    overflow-x: hidden;
+  }
+
+  h1 {
+    font-size: 1.8em;
+    line-height: 1.1;
+    margin: 1rem 0.5rem;
+  }
+
+  button {
+    padding: 0.5em 1em;
+    font-size: 0.9em;
+    width: 80%;
+    max-width: 300px;
+  }
+
+  code {
+    font-size: 0.85em;
+  }
+}
+
+/* Small Tablets/Larger Phones - 481px to 768px */
+@media (min-width: 481px) and (max-width: 768px) {
+  body {
+    padding: 20px 0;
+  }
+
+  h1 {
+    font-size: 2.4em;
+    margin: 1.5rem 1rem;
+  }
+
+  button {
+    padding: 0.6em 1.2em;
+    font-size: 0.95em;
   }
 }
