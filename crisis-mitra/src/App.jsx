@@ -89,7 +89,13 @@ function App() {
         setUserName(name || 'User')
         setUserId(id)
         setIsLoggedIn(true)
-        setCurrentPage(roleSelected === 'needy' ? 'needy' : roleSelected === 'volunteer' ? 'volunteer' : 'dashboard')
+        if (roleSelected === 'needy') {
+          setCurrentPage('needy')
+        } else if (roleSelected === 'volunteer') {
+          setCurrentPage('volunteer')
+        } else {
+          setCurrentPage('dashboard')
+        }
       }} role={roleSelected} />
     }
 
@@ -139,10 +145,23 @@ function App() {
         }}
       />
     }
-    if (currentPage === 'needy') {
-      return <Needy userName={userName} onProfileClick={() => setCurrentPage('profile')} onBack={() => setCurrentPage('dashboard')} onServiceRequest={(request) => {
-        setServiceRequests(prev => [...prev, { ...request, id: Date.now() }])
+    if (currentPage === 'serviceRequestForm') {
+      // Render your existing service request form here
+      // For now, fallback to Needy (or replace with your form component)
+      return <Needy userName={userName} onProfileClick={() => setCurrentPage('profile')} onBack={() => setCurrentPage('needy')} onServiceRequest={(request) => {
+        setServiceRequests(prev => [...prev, { ...request, id: Date.now(), status: 'Pending' }])
+        setCurrentPage('needy')
       }} />
+    }
+    if (currentPage === 'needy') {
+      return <NeedyDashboard
+        userName={userName}
+        requests={serviceRequests}
+        onNewRequest={() => setCurrentPage('serviceRequestForm')}
+        onPullRequest={(id) => {
+          setServiceRequests(prev => prev.filter(r => r.id !== id))
+        }}
+      />
     }
     if (currentPage === 'volunteer') {
       return <VolunteerDashboard userName={userName} onProfileClick={() => setCurrentPage('profile')} onBack={() => setCurrentPage('dashboard')} serviceRequests={serviceRequests} />

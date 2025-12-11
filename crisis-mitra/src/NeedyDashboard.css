@@ -1,0 +1,98 @@
+.needy-dashboard-container {
+    max-width: 700px;
+    margin: 2rem auto;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    padding: 2rem;
+}
+
+.needy-dashboard-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 2rem;
+}
+
+.needy-dashboard-header h1 {
+    font-size: 2rem;
+    color: #2d3e50;
+}
+
+.new-request-section {
+    margin-bottom: 2rem;
+    text-align: center;
+}
+
+.new-request-btn {
+    background: #1976d2;
+    color: #fff;
+    border: none;
+    padding: 0.8rem 2rem;
+    border-radius: 6px;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.new-request-btn:hover {
+    background: #1565c0;
+}
+
+.request-status-section {
+    margin-top: 1rem;
+}
+
+.request-list {
+    list-style: none;
+    padding: 0;
+}
+
+.request-item {
+    background: #f5f7fa;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    padding: 1rem;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.request-info {
+    margin-bottom: 0.5rem;
+}
+
+.request-status {
+    font-weight: bold;
+    color: #1976d2;
+}
+
+.accepted-bio {
+    margin-top: 0.5rem;
+    background: #e3f2fd;
+    border-radius: 6px;
+    padding: 0.5rem 1rem;
+}
+
+.bio-details span {
+    display: block;
+    font-size: 0.95rem;
+    color: #333;
+}
+
+.pull-request-btn {
+    background: #e53935;
+    color: #fff;
+    border: none;
+    padding: 0.5rem 1.2rem;
+    border-radius: 6px;
+    font-size: 1rem;
+    cursor: pointer;
+    align-self: flex-end;
+    transition: background 0.2s;
+}
+
+.pull-request-btn:hover {
+    background: #b71c1c;
+}
