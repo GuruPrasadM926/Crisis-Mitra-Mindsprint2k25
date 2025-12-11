@@ -4,6 +4,8 @@ import LoginPage from './LoginPage'
 import SignupPage from './SignupPage'
 import VolunteerLogin from './VolunteerLogin'
 import VolunteerSignup from './VolunteerSignup'
+import DonorLogin from './Donorlogin'
+import DonorSignup from './DonorSignup'
 import NeedyLogin from './NeedyLogin'
 import NeedySignup from './NeedySignup'
 import Dashboard from './Dashboard'
@@ -40,6 +42,9 @@ function App() {
     if (currentPage === 'signup') {
       // render role-specific signup when a role was chosen
       if (roleSelected === 'volunteer') {
+        if (volunteerSubRole === 'donor') {
+          return <DonorSignup onSignupSuccess={(name) => { setUserName(name || 'User'); setCurrentPage('login') }} onLoginClick={() => setCurrentPage('login')} />
+        }
         return <VolunteerSignup onSignupSuccess={(name) => { setUserName(name || 'User'); setCurrentPage('login') }} onLoginClick={() => setCurrentPage('login')} />
       }
       if (roleSelected === 'needy') {
@@ -51,16 +56,19 @@ function App() {
     if (currentPage === 'login') {
       // render role-specific login when a role was chosen
       if (roleSelected === 'volunteer') {
+        if (volunteerSubRole === 'donor') {
+          return <DonorLogin onSignupClick={() => setCurrentPage('signup')} onLogin={(name, phone) => {
+            setUserName(name || 'User')
+            setUserPhone(phone || '')
+            setIsLoggedIn(true)
+            setCurrentPage('donor')
+          }} />
+        }
         return <VolunteerLogin onSignupClick={() => setCurrentPage('signup')} onLogin={(name, phone) => {
           setUserName(name || 'User')
           setUserPhone(phone || '')
           setIsLoggedIn(true)
-          // Redirect to volunteer dashboard or donor form based on sub-role
-          if (volunteerSubRole === 'donor') {
-            setCurrentPage('donor')
-          } else {
-            setCurrentPage('volunteer')
-          }
+          setCurrentPage('volunteer')
         }} />
       }
       if (roleSelected === 'needy') {
