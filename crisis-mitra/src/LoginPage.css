@@ -83,6 +83,16 @@
     border-left: 4px solid #c33;
 }
 
+.success-message {
+    background-color: #efe;
+    color: #3c3;
+    padding: 10px;
+    border-radius: 5px;
+    margin-bottom: 15px;
+    font-size: 14px;
+    border-left: 4px solid #3c3;
+}
+
 .login-btn {
     width: 100%;
     padding: 12px;
