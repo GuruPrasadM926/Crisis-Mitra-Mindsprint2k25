@@ -23,7 +23,7 @@ function LoginPage({ onSignupClick }) {
         <div className="login-container">
             <div className="login-box">
                 <h1>SEVA HUB</h1>
-                <p className="subtitle">Hub for Seeking & Providing Help</p>
+                <p className="subtitle">One Hub For Every Seva</p>
 
                 <form onSubmit={handleSubmit}>
                     <div className="form-group">
