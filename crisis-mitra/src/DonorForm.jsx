@@ -1,11 +1,11 @@
 import { useState } from 'react'
 import './DonorForm.css'
 
-function DonorForm({ userName = 'User', phone = '', onBack, onProfileClick, onSubmit }) {
+function DonorForm({ userName = 'User', phone = '', age = '', onBack, onProfileClick, onSubmit }) {
     const [formData, setFormData] = useState({
         name: userName,
         phone: phone,
-        age: '',
+        age: age,
         bloodType: '',
         chronicDiseases: '', // 'yes' or 'no'
         chronicDiseasesList: [],
@@ -203,6 +203,8 @@ function DonorForm({ userName = 'User', phone = '', onBack, onProfileClick, onSu
                                         onChange={handleChange}
                                         placeholder="Enter your age"
                                         min="18"
+                                        readOnly={formData.age !== ''}
+                                        className={formData.age !== '' ? 'input-readonly' : ''}
                                     />
                                 </div>
 

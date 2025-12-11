@@ -270,6 +270,7 @@ function App() {
       return <DonorForm
         userName={userName}
         phone={userPhone}
+        age={userAge}
         onBack={goBack}
         onProfileClick={() => navigateToPage('profile')}
         onSubmit={handleDonorFormSubmit}
