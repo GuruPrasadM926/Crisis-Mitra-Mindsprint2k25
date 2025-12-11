@@ -1,5 +1,6 @@
 .login-container {
-    min-height: 100vh;
+    min-height: 800px;
+    min-width: 600px;
     display: flex;
     align-items: center;
     justify-content: center;
