@@ -2,11 +2,13 @@
 .tickbox-list {
     margin-top: 0.5em;
 }
+
 .tickbox-grid {
     display: flex;
     flex-wrap: wrap;
     gap: 1em;
 }
+
 .tickbox-item {
     display: flex;
     align-items: center;
@@ -15,6 +17,7 @@
     position: relative;
     min-width: 140px;
 }
+
 .tickbox-input {
     position: absolute;
     opacity: 0;
@@ -22,6 +25,7 @@
     height: 0;
     width: 0;
 }
+
 .tickbox-custom {
     width: 18px;
     height: 18px;
@@ -32,11 +36,13 @@
     display: inline-block;
     transition: background 0.2s;
 }
-.tickbox-input:checked + .tickbox-custom {
+
+.tickbox-input:checked+.tickbox-custom {
     background-color: #007bff;
     border-color: #007bff;
 }
-.tickbox-input:checked + .tickbox-custom:after {
+
+.tickbox-input:checked+.tickbox-custom:after {
     content: '';
     display: block;
     position: absolute;
@@ -48,10 +54,12 @@
     border-width: 0 3px 3px 0;
     transform: rotate(45deg);
 }
+
 .tickbox-label-text {
     margin-left: 28px;
     font-size: 1em;
 }
+
 .donor-container {
     min-height: 100vh;
     display: flex;
