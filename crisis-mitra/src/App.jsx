@@ -14,6 +14,7 @@ import NeedyDashboard from './NeedyDashboard'
 import Volunteer from './Volunteer'
 import VolunteerOrDonor from './VolunteerOrDonor'
 import VolunteerDashboard from './VolunteerDashboard'
+import DonorDashboard from './DonorDashboard'
 import DonorForm from './DonorForm'
 import UserProfile from './UserProfile'
 
@@ -23,10 +24,15 @@ function App() {
   const [userId, setUserId] = useState(null)
   const [userName, setUserName] = useState('User')
   const [userPhone, setUserPhone] = useState('')
+  const [userAge, setUserAge] = useState('')
+  const [userBloodType, setUserBloodType] = useState('')
   const [roleSelected, setRoleSelected] = useState(null)
   const [volunteerSubRole, setVolunteerSubRole] = useState(null) // volunteer or donor
   const [serviceRequests, setServiceRequests] = useState([])
   const [pageHistory, setPageHistory] = useState(['dashboard'])
+  const [incomingAlerts, setIncomingAlerts] = useState([])
+  const [upcomingAlerts, setUpcomingAlerts] = useState([])
+  const [completedAlerts, setCompletedAlerts] = useState([])
 
   // Function to navigate to a new page and track history
   const navigateToPage = (page) => {
@@ -42,6 +48,30 @@ function App() {
       const newHistory = pageHistory.slice(0, -1)
       setPageHistory(newHistory)
       setCurrentPage(newHistory[newHistory.length - 1])
+    }
+  }
+
+  // Handle accepting a blood donation alert
+  const handleAcceptAlert = (alert) => {
+    const upcomingAlert = {
+      ...alert,
+      acceptedAt: new Date().toISOString()
+    }
+    setUpcomingAlerts(prev => [...prev, upcomingAlert])
+    setIncomingAlerts(prev => prev.filter(a => a.id !== alert.id))
+  }
+
+  // Handle completing an alert (success or failure)
+  const handleCompleteAlert = (alertId, status) => {
+    const alert = upcomingAlerts.find(a => a.id === alertId)
+    if (alert) {
+      const completedAlert = {
+        ...alert,
+        status: status,
+        completedAt: new Date().toISOString()
+      }
+      setCompletedAlerts(prev => [...prev, completedAlert])
+      setUpcomingAlerts(prev => prev.filter(a => a.id !== alertId))
     }
   }
 
@@ -79,10 +109,12 @@ function App() {
       // render role-specific login when a role was chosen
       if (roleSelected === 'volunteer') {
         if (volunteerSubRole === 'donor') {
-          return <DonorLogin onSignupClick={() => navigateToPage('signup')} onLogin={(name, phone, id) => {
+          return <DonorLogin onSignupClick={() => navigateToPage('signup')} onLogin={(name, phone, id, age, bloodType) => {
             setUserName(name || 'User')
             setUserPhone(phone || '')
             setUserId(id)
+            setUserAge(age || '')
+            setUserBloodType(bloodType || '')
             setIsLoggedIn(true)
             navigateToPage('donor')
           }} />
@@ -149,6 +181,11 @@ function App() {
           setUserId(null)
           setUserName('User')
           setUserPhone('')
+          setUserAge('')
+          setUserBloodType('')
+          setIncomingAlerts([])
+          setUpcomingAlerts([])
+          setCompletedAlerts([])
         }}
       />
     }
@@ -188,7 +225,18 @@ function App() {
       return <VolunteerDashboard userName={userName} onProfileClick={() => navigateToPage('profile')} onBack={goBack} serviceRequests={serviceRequests} />
     }
     if (currentPage === 'donor') {
-      return <DonorForm userName={userName} phone={userPhone} onProfileClick={() => navigateToPage('profile')} onBack={goBack} />
+      return <DonorDashboard
+        userName={userName}
+        userAge={userAge}
+        userBloodType={userBloodType}
+        onProfileClick={() => navigateToPage('profile')}
+        onBack={goBack}
+        incomingAlerts={incomingAlerts}
+        upcomingAlerts={upcomingAlerts}
+        completedAlerts={completedAlerts}
+        onAcceptAlert={handleAcceptAlert}
+        onCompleteAlert={handleCompleteAlert}
+      />
     }
     return <Dashboard
       userName={userName}
@@ -202,6 +250,11 @@ function App() {
         setUserId(null)
         setUserName('User')
         setUserPhone('')
+        setUserAge('')
+        setUserBloodType('')
+        setIncomingAlerts([])
+        setUpcomingAlerts([])
+        setCompletedAlerts([])
       }}
       onRoleSelect={(role) => {
         if (role === 'needy') navigateToPage('needy')

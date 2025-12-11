@@ -28,7 +28,9 @@ function DonorLogin({ onSignupClick, onLogin }) {
 
         // Use actual stored name and phone from database
         const phone = result.user.phone || '9999999999'
-        if (onLogin) onLogin(result.user.name, phone, result.user.id)
+        const age = result.user.donorInfo?.age || ''
+        const bloodType = result.user.donorInfo?.bloodType || ''
+        if (onLogin) onLogin(result.user.name, phone, result.user.id, age, bloodType)
     }
 
     return (
