@@ -1,5 +1,6 @@
 .vdb-container {
-    min-height: 100vh;
+    min-height: 800px;
+    min-width: 700px;
     display: flex;
     flex-direction: column;
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -41,7 +42,7 @@
 }
 
 .vdb-main {
-    max-width: 1200px;
+    max-width: 700px;
     margin: 30px auto;
     width: 100%;
     display: flex;
