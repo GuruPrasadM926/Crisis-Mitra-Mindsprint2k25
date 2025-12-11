@@ -1,25 +1,17 @@
 import { useState } from 'react'
 import './LoginPage.css'
 import { userDB } from './TempDB'
-import { calculateAge, getMaxDOB } from './utils'
 
 function NeedyLogin({ onSignupClick, onLogin }) {
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
-    const [dob, setDob] = useState('')
     const [error, setError] = useState('')
 
     const handleSubmit = (e) => {
         e.preventDefault()
 
-        if (!email || !password || !dob) {
+        if (!email || !password) {
             setError('Please fill in all fields')
-            return
-        }
-
-        const age = calculateAge(dob)
-        if (age < 18) {
-            setError('You must be at least 18 years old to login')
             return
         }
 
@@ -64,17 +56,6 @@ function NeedyLogin({ onSignupClick, onLogin }) {
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
                             placeholder="Enter your password"
-                        />
-                    </div>
-
-                    <div className="form-group">
-                        <label htmlFor="dob">Date of Birth</label>
-                        <input
-                            type="date"
-                            id="dob"
-                            value={dob}
-                            onChange={(e) => setDob(e.target.value)}
-                            max={getMaxDOB()}
                         />
                     </div>
 
