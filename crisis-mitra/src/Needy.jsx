@@ -11,8 +11,11 @@ function Needy({ userName = 'User', onBack }) {
         place: '',
         bloodType: '',
         organType: '',
+        organTypeOther: '',
         eventType: '',
+        eventTypeOther: '',
         serviceType: '',
+        serviceTypeOther: '',
         patientAge: ''
     })
     const [error, setError] = useState('')
@@ -73,6 +76,23 @@ function Needy({ userName = 'User', onBack }) {
             return
         }
 
+        // Validation for "Other" fields when selected
+        if (formData.service === 'Organ' && formData.organType === 'Other' && !formData.organTypeOther) {
+            setError('Please specify the organ type')
+            setSuccess('')
+            return
+        }
+        if (formData.service === 'Event Management' && formData.eventType === 'Other' && !formData.eventTypeOther) {
+            setError('Please specify the event type')
+            setSuccess('')
+            return
+        }
+        if (formData.service === 'Social Service' && formData.serviceType === 'Other' && !formData.serviceTypeOther) {
+            setError('Please specify the service type')
+            setSuccess('')
+            return
+        }
+
         // Patient age validation for Blood service (if provided)
         if (formData.service === 'Blood' && formData.patientAge && parseInt(formData.patientAge) <= 0) {
             setError('Patient age must be greater than 0')
@@ -128,8 +148,11 @@ function Needy({ userName = 'User', onBack }) {
                 place: '',
                 bloodType: '',
                 organType: '',
+                organTypeOther: '',
                 eventType: '',
+                eventTypeOther: '',
                 serviceType: '',
+                serviceTypeOther: '',
                 patientAge: ''
             })
             setSuccess('')
@@ -256,6 +279,19 @@ function Needy({ userName = 'User', onBack }) {
                                         ))}
                                     </select>
                                 </div>
+                                {formData.organType === 'Other' && (
+                                    <div className="form-group">
+                                        <label htmlFor="organTypeOther">Please specify organ type</label>
+                                        <input
+                                            type="text"
+                                            id="organTypeOther"
+                                            name="organTypeOther"
+                                            value={formData.organTypeOther}
+                                            onChange={handleChange}
+                                            placeholder="Enter organ type"
+                                        />
+                                    </div>
+                                )}
                                 <div className="form-group">
                                     <label htmlFor="bloodType">Blood Type</label>
                                     <select
@@ -286,37 +322,67 @@ function Needy({ userName = 'User', onBack }) {
                         )}
 
                         {formData.service === 'Event Management' && (
-                            <div className="form-group">
-                                <label htmlFor="eventType">Event Type</label>
-                                <select
-                                    id="eventType"
-                                    name="eventType"
-                                    value={formData.eventType}
-                                    onChange={handleChange}
-                                >
-                                    <option value="">Select event type</option>
-                                    {eventTypes.map(type => (
-                                        <option key={type} value={type}>{type}</option>
-                                    ))}
-                                </select>
-                            </div>
+                            <>
+                                <div className="form-group">
+                                    <label htmlFor="eventType">Event Type</label>
+                                    <select
+                                        id="eventType"
+                                        name="eventType"
+                                        value={formData.eventType}
+                                        onChange={handleChange}
+                                    >
+                                        <option value="">Select event type</option>
+                                        {eventTypes.map(type => (
+                                            <option key={type} value={type}>{type}</option>
+                                        ))}
+                                    </select>
+                                </div>
+                                {formData.eventType === 'Other' && (
+                                    <div className="form-group">
+                                        <label htmlFor="eventTypeOther">Please specify event type</label>
+                                        <input
+                                            type="text"
+                                            id="eventTypeOther"
+                                            name="eventTypeOther"
+                                            value={formData.eventTypeOther}
+                                            onChange={handleChange}
+                                            placeholder="Enter event type"
+                                        />
+                                    </div>
+                                )}
+                            </>
                         )}
 
                         {formData.service === 'Social Service' && (
-                            <div className="form-group">
-                                <label htmlFor="serviceType">Service Type</label>
-                                <select
-                                    id="serviceType"
-                                    name="serviceType"
-                                    value={formData.serviceType}
-                                    onChange={handleChange}
-                                >
-                                    <option value="">Select service type</option>
-                                    {socialServiceTypes.map(type => (
-                                        <option key={type} value={type}>{type}</option>
-                                    ))}
-                                </select>
-                            </div>
+                            <>
+                                <div className="form-group">
+                                    <label htmlFor="serviceType">Service Type</label>
+                                    <select
+                                        id="serviceType"
+                                        name="serviceType"
+                                        value={formData.serviceType}
+                                        onChange={handleChange}
+                                    >
+                                        <option value="">Select service type</option>
+                                        {socialServiceTypes.map(type => (
+                                            <option key={type} value={type}>{type}</option>
+                                        ))}
+                                    </select>
+                                </div>
+                                {formData.serviceType === 'Other' && (
+                                    <div className="form-group">
+                                        <label htmlFor="serviceTypeOther">Please specify service type</label>
+                                        <input
+                                            type="text"
+                                            id="serviceTypeOther"
+                                            name="serviceTypeOther"
+                                            value={formData.serviceTypeOther}
+                                            onChange={handleChange}
+                                            placeholder="Enter service type"
+                                        />
+                                    </div>
+                                )}
+                            </>
                         )}
 
                         <div className="form-group">

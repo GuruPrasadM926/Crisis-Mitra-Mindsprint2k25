@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import './LoginPage.css'
+import { userDB } from './TempDB'
 
 function LoginPage({ onSignupClick, onLogin }) {
     const [email, setEmail] = useState('')
@@ -20,14 +21,20 @@ function LoginPage({ onSignupClick, onLogin }) {
             return
         }
 
-        setError('')
-        // Handle login logic here
-        console.log('Login attempt with:', { email, password, age })
+        // Authenticate user with database
+        const result = userDB.authenticateUser(email, password)
 
-        // Extract name from email for display
-        const nameFromEmail = email.split('@')[0]
+        if (!result.success) {
+            setError(result.message)
+            return
+        }
+
+        setError('')
+        console.log('Login successful for user:', result.user)
+
+        // Use actual stored name from database, not derived from email
         if (onLogin) {
-            onLogin(nameFromEmail)
+            onLogin(result.user.name)
         }
     }
 

@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import './SignupPage.css'
+import { userDB } from './TempDB'
 
 function VolunteerSignup({ onSignupSuccess, onLoginClick }) {
     const [formData, setFormData] = useState({ name: '', phone: '', email: '', city: '', pincode: '', password: '', confirmPassword: '' })
@@ -32,6 +33,24 @@ function VolunteerSignup({ onSignupSuccess, onLoginClick }) {
         console.log('Volunteer signup data:', formData)
 
         const name = formData.name
+
+        // Save user to database
+        const result = userDB.registerUser({
+            name: formData.name,
+            email: formData.email,
+            phone: formData.phone,
+            password: formData.password,
+            city: formData.city,
+            pincode: formData.pincode,
+            role: 'volunteer'
+        })
+
+        if (!result.success) {
+            setError(result.message)
+            setSuccess('')
+            return
+        }
+
         setFormData({ name: '', phone: '', email: '', city: '', pincode: '', password: '', confirmPassword: '' })
 
         setTimeout(() => { if (onSignupSuccess) onSignupSuccess(name) }, 1000)

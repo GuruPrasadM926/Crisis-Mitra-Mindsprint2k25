@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import './LoginPage.css'
+import { userDB } from './TempDB'
 
 function NeedyLogin({ onSignupClick, onLogin }) {
     const [email, setEmail] = useState('')
@@ -20,9 +21,19 @@ function NeedyLogin({ onSignupClick, onLogin }) {
             return
         }
 
+        // Authenticate user with database
+        const result = userDB.authenticateUser(email, password)
+
+        if (!result.success) {
+            setError(result.message)
+            return
+        }
+
         setError('')
-        const nameFromEmail = email.split('@')[0]
-        if (onLogin) onLogin(nameFromEmail)
+        console.log('Needy login successful for user:', result.user)
+
+        // Use actual stored name from database
+        if (onLogin) onLogin(result.user.name)
     }
 
     return (

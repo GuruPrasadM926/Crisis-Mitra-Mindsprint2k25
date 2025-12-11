@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import './LoginPage.css'
+import { userDB } from './TempDB'
 
 function VolunteerLogin({ onSignupClick, onLogin }) {
     const [email, setEmail] = useState('')
@@ -20,9 +21,20 @@ function VolunteerLogin({ onSignupClick, onLogin }) {
             return
         }
 
+        // Authenticate user with database
+        const result = userDB.authenticateUser(email, password)
+
+        if (!result.success) {
+            setError(result.message)
+            return
+        }
+
         setError('')
-        const nameFromEmail = email.split('@')[0]
-        if (onLogin) onLogin(nameFromEmail)
+        console.log('Volunteer login successful for user:', result.user)
+
+        // Use actual stored name and phone from database
+        const phone = result.user.phone || '9999999999'
+        if (onLogin) onLogin(result.user.name, phone)
     }
 
     return (

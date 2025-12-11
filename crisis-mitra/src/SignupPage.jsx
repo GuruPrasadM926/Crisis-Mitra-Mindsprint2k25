@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import './SignupPage.css'
+import { userDB } from './TempDB'
 
 function SignupPage({ onSignupSuccess, onLoginClick }) {
     const [formData, setFormData] = useState({
@@ -72,7 +73,25 @@ function SignupPage({ onSignupSuccess, onLoginClick }) {
 
         setError('')
         setSuccess('Signup successful! Redirecting to login...')
-        console.log('Signup data:', formData)
+
+        // Save user to database
+        const result = userDB.registerUser({
+            name: formData.name,
+            email: formData.email,
+            phone: formData.phone,
+            password: formData.password,
+            city: formData.city,
+            pincode: formData.pincode,
+            role: 'general'
+        })
+
+        if (!result.success) {
+            setError(result.message)
+            setSuccess('')
+            return
+        }
+
+        console.log('Signup data saved:', result.user)
 
         // Reset form
         setFormData({
