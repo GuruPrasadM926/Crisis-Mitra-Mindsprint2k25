@@ -116,8 +116,13 @@ function DonorDashboard({
                                         <span className="urgency-badge">{alert.urgency}</span>
                                     </div>
                                     <div className="alert-details">
+                                        <p><strong>Blood Type Needed:</strong> {alert.bloodType}</p>
                                         <p><strong>Units Needed:</strong> {alert.units}</p>
                                         <p><strong>Location:</strong> {alert.hospital}</p>
+                                        {alert.requesterName && <p><strong>Requester:</strong> {alert.requesterName}</p>}
+                                        {alert.requesterContact && <p><strong>Contact:</strong> {alert.requesterContact}</p>}
+                                        {alert.patientAge && <p><strong>Patient Age:</strong> {alert.patientAge}</p>}
+                                        {alert.organType && <p><strong>Organ Type:</strong> {alert.organType}</p>}
                                     </div>
                                     {userBloodType && !isBloodTypeCompatible(userBloodType, alert.bloodType) && (
                                         <div style={{ padding: '10px', backgroundColor: '#ffebee', borderRadius: '6px', marginBottom: '10px', color: '#c92a2a', fontSize: '13px', fontWeight: '600', textAlign: 'center' }}>
@@ -164,9 +169,11 @@ function DonorDashboard({
                                         <span className="blood-type-label">{alert.bloodType}</span>
                                     </div>
                                     <div className="alert-details">
+                                        <p><strong>Blood Type:</strong> {alert.bloodType}</p>
                                         <p><strong>Units:</strong> {alert.units}</p>
                                         <p><strong>Location:</strong> {alert.hospital}</p>
-                                        <p><strong>Date:</strong> {new Date(alert.acceptedAt).toLocaleDateString()}</p>
+                                        {alert.requesterName && <p><strong>Requester:</strong> {alert.requesterName}</p>}
+                                        <p><strong>Scheduled:</strong> {new Date(alert.acceptedAt).toLocaleDateString()}</p>
                                     </div>
                                     {selectedUpcoming === alert.id && (
                                         <div className="completion-buttons">
@@ -222,8 +229,10 @@ function DonorDashboard({
                                         </span>
                                     </div>
                                     <div className="alert-details">
+                                        <p><strong>Blood Type:</strong> {alert.bloodType}</p>
                                         <p><strong>Units:</strong> {alert.units}</p>
                                         <p><strong>Location:</strong> {alert.hospital}</p>
+                                        {alert.requesterName && <p><strong>Requester:</strong> {alert.requesterName}</p>}
                                         <p><strong>Completed:</strong> {new Date(alert.completedAt).toLocaleDateString()}</p>
                                     </div>
                                 </div>

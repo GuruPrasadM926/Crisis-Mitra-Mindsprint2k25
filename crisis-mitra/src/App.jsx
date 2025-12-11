@@ -203,12 +203,12 @@ function App() {
       // render role-specific signup when a role was chosen
       if (roleSelected === 'volunteer') {
         if (volunteerSubRole === 'donor') {
-          return <DonorSignup onSignupSuccess={(name) => { setUserName(name || 'User'); navigateToPage('login') }} onLoginClick={() => navigateToPage('login')} onBack={() => { setVolunteerSubRole(null); setRoleSelected(null); navigateToPage('dashboard') }} />
+          return <DonorSignup onSignupSuccess={(name) => { setUserName(name || 'User'); navigateToPage('login') }} onLoginClick={() => navigateToPage('login')} onBack={() => navigateToPage('volunteerOrDonor')} />
         }
-        return <VolunteerSignup onSignupSuccess={(name) => { setUserName(name || 'User'); navigateToPage('login') }} onLoginClick={() => navigateToPage('login')} onBack={() => { setVolunteerSubRole(null); setRoleSelected(null); navigateToPage('dashboard') }} />
+        return <VolunteerSignup onSignupSuccess={(name) => { setUserName(name || 'User'); navigateToPage('login') }} onLoginClick={() => navigateToPage('login')} onBack={() => navigateToPage('volunteerOrDonor')} />
       }
       if (roleSelected === 'needy') {
-        return <NeedySignup onSignupSuccess={(name) => { setUserName(name || 'User'); navigateToPage('login') }} onLoginClick={() => navigateToPage('login')} onBack={() => { setRoleSelected(null); navigateToPage('dashboard') }} />
+        return <NeedySignup onSignupSuccess={(name) => { setUserName(name || 'User'); navigateToPage('login') }} onLoginClick={() => navigateToPage('login')} onBack={() => { setRoleSelected(null); navigateToPage(isLoggedIn ? 'needy' : 'dashboard') }} />
       }
       return <SignupPage onSignupSuccess={(name) => { setUserName(name || 'User'); navigateToPage('login') }} onLoginClick={() => navigateToPage('login')} role={roleSelected} />
     }
@@ -226,7 +226,7 @@ function App() {
             setUserBloodType(bloodType || '')
             setIsLoggedIn(true)
             navigateToPage('donor')
-          }} onBack={() => { setVolunteerSubRole(null); setRoleSelected(null); navigateToPage('dashboard') }} />
+          }} onBack={() => navigateToPage('volunteerOrDonor')} />
         }
         return <VolunteerLogin onSignupClick={() => navigateToPage('signup')} onLogin={(name, phone, id, email) => {
           setUserName(name || 'User')
@@ -235,7 +235,7 @@ function App() {
           setUserId(id)
           setIsLoggedIn(true)
           navigateToPage('volunteer')
-        }} onBack={() => { setVolunteerSubRole(null); setRoleSelected(null); navigateToPage('dashboard') }} />
+        }} onBack={() => navigateToPage('volunteerOrDonor')} />
       }
       if (roleSelected === 'needy') {
         return <NeedyLogin onSignupClick={() => navigateToPage('signup')} onLogin={(name, id) => {
@@ -243,7 +243,7 @@ function App() {
           setUserId(id)
           setIsLoggedIn(true)
           navigateToPage('needy')
-        }} onBack={() => { setRoleSelected(null); navigateToPage('dashboard') }} />
+        }} onBack={() => { setRoleSelected(null); navigateToPage(isLoggedIn ? 'needy' : 'dashboard') }} />
       }
 
       return <LoginPage onSignupClick={() => navigateToPage('signup')} onLogin={(name, id) => {
@@ -314,12 +314,14 @@ function App() {
           setVolunteerSubRole('donor')
           navigateToPage('donor')
         }}
+        onProfileClick={() => navigateToPage('profile')}
+        onBack={() => { setRoleSelected(null); navigateToPage('dashboard') }}
       />
     }
     if (currentPage === 'serviceRequestForm') {
       // Render your existing service request form here
       // For now, fallback to Needy (or replace with your form component)
-      return <Needy userName={userName} onProfileClick={() => navigateToPage('profile')} onBack={goBack} onServiceRequest={(request) => {
+      return <Needy userName={userName} onProfileClick={() => navigateToPage('profile')} onBack={() => navigateToPage('needy')} onServiceRequest={(request) => {
         const requestId = Date.now()
 
         // Blood and Organ requests go ONLY to Donor Dashboard (incoming alerts)
@@ -338,12 +340,12 @@ function App() {
             createdAt: new Date().toISOString()
           }
           setIncomingAlerts(prev => [...prev, alert])
-          // Also add to serviceRequests for NeedyDashboard display
-          const newRequest = { ...request, id: requestId, status: 'Pending', acceptedBy: null }
+          // Also add to serviceRequests for NeedyDashboard display only
+          const newRequest = { ...request, id: requestId, status: 'Pending', acceptedBy: null, requestType: 'Blood_Organ' }
           setServiceRequests(prev => [...prev, newRequest])
         } else {
           // Event Management and Social Service requests go ONLY to Volunteer Dashboard
-          const newRequest = { ...request, id: requestId, status: 'Pending', acceptedBy: null }
+          const newRequest = { ...request, id: requestId, status: 'Pending', acceptedBy: null, requestType: 'Event_Social' }
           setServiceRequests(prev => [...prev, newRequest])
         }
 
@@ -360,16 +362,19 @@ function App() {
           // Also remove from donor incoming alerts if it was a blood/organ request
           setIncomingAlerts(prev => prev.filter(a => a.id !== id))
         }}
-        onBack={goBack}
+        onBack={() => navigateToPage('dashboard')}
       />
     }
     if (currentPage === 'volunteer') {
+      // Filter serviceRequests to only show Event/Social Service requests (not Blood/Organ)
+      const volunteerRequests = serviceRequests.filter(req => req.requestType !== 'Blood_Organ')
+
       return <VolunteerDashboard
         userName={userName}
         onProfileClick={() => navigateToPage('profile')}
-        onBack={goBack}
-        serviceRequests={serviceRequests}
-        incomingAlerts={serviceRequests}
+        onBack={() => navigateToPage('volunteerOrDonor')}
+        serviceRequests={volunteerRequests}
+        incomingAlerts={volunteerRequests}
         upcomingTasks={volunteerUpcomingTasks}
         completedTasks={volunteerCompletedTasks}
         onAcceptTask={handleAcceptTask}
@@ -380,7 +385,7 @@ function App() {
       return <DonorForm
         userName={userName}
         phone={userPhone}
-        onBack={goBack}
+        onBack={() => navigateToPage('volunteerOrDonor')}
         onProfileClick={() => navigateToPage('profile')}
         onSubmit={handleDonorFormSubmit}
       />
@@ -391,7 +396,7 @@ function App() {
         userAge={userAge}
         userBloodType={userBloodType}
         onProfileClick={() => navigateToPage('profile')}
-        onBack={goBack}
+        onBack={() => navigateToPage('volunteerOrDonor')}
         incomingAlerts={incomingAlerts}
         upcomingAlerts={upcomingAlerts}
         completedAlerts={completedAlerts}

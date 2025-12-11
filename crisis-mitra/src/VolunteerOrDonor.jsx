@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import './VolunteerOrDonor.css'
 
-function VolunteerOrDonor({ userName, onVolunteerSelect, onDonorSelect }) {
+function VolunteerOrDonor({ userName, onVolunteerSelect, onDonorSelect, onProfileClick, onBack }) {
     const [selectedRole, setSelectedRole] = useState(null)
 
     const handleVolunteerClick = () => {
@@ -18,11 +18,15 @@ function VolunteerOrDonor({ userName, onVolunteerSelect, onDonorSelect }) {
         <div className="vod-container">
             <header className="vod-header">
                 <div className="header-content">
+                    {onBack && <button className="back-btn" onClick={onBack}>← Back</button>}
                     <h1>SEVA HUB</h1>
-                    <div className="profile-top">
-                        <div className="profile-icon-small">👤</div>
-                        <span className="user-name-small">{userName}</span>
-                    </div>
+                    <button
+                        className="profile-btn"
+                        onClick={onProfileClick}
+                        title="View Profile"
+                    >
+                        <span className="profile-small">👤 {userName}</span>
+                    </button>
                 </div>
             </header>
 
