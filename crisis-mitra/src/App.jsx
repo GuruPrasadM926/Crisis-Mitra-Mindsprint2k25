@@ -26,6 +26,24 @@ function App() {
   const [roleSelected, setRoleSelected] = useState(null)
   const [volunteerSubRole, setVolunteerSubRole] = useState(null) // volunteer or donor
   const [serviceRequests, setServiceRequests] = useState([])
+  const [pageHistory, setPageHistory] = useState(['dashboard'])
+
+  // Function to navigate to a new page and track history
+  const navigateToPage = (page) => {
+    if (page !== currentPage) {
+      setPageHistory(prev => [...prev, page])
+      setCurrentPage(page)
+    }
+  }
+
+  // Function to go back to the previous page
+  const goBack = () => {
+    if (pageHistory.length > 1) {
+      const newHistory = pageHistory.slice(0, -1)
+      setPageHistory(newHistory)
+      setCurrentPage(newHistory[newHistory.length - 1])
+    }
+  }
 
   if (!isLoggedIn) {
     // VolunteerOrDonor selection page (before login for volunteer role)
@@ -34,11 +52,11 @@ function App() {
         userName={userName}
         onVolunteerSelect={() => {
           setVolunteerSubRole('volunteer')
-          setCurrentPage('login')
+          navigateToPage('login')
         }}
         onDonorSelect={() => {
           setVolunteerSubRole('donor')
-          setCurrentPage('login')
+          navigateToPage('login')
         }}
       />
     }
@@ -47,55 +65,55 @@ function App() {
       // render role-specific signup when a role was chosen
       if (roleSelected === 'volunteer') {
         if (volunteerSubRole === 'donor') {
-          return <DonorSignup onSignupSuccess={(name) => { setUserName(name || 'User'); setCurrentPage('login') }} onLoginClick={() => setCurrentPage('login')} />
+          return <DonorSignup onSignupSuccess={(name) => { setUserName(name || 'User'); navigateToPage('login') }} onLoginClick={() => navigateToPage('login')} />
         }
-        return <VolunteerSignup onSignupSuccess={(name) => { setUserName(name || 'User'); setCurrentPage('login') }} onLoginClick={() => setCurrentPage('login')} />
+        return <VolunteerSignup onSignupSuccess={(name) => { setUserName(name || 'User'); navigateToPage('login') }} onLoginClick={() => navigateToPage('login')} />
       }
       if (roleSelected === 'needy') {
-        return <NeedySignup onSignupSuccess={(name) => { setUserName(name || 'User'); setCurrentPage('login') }} onLoginClick={() => setCurrentPage('login')} />
+        return <NeedySignup onSignupSuccess={(name) => { setUserName(name || 'User'); navigateToPage('login') }} onLoginClick={() => navigateToPage('login')} />
       }
-      return <SignupPage onSignupSuccess={(name) => { setUserName(name || 'User'); setCurrentPage('login') }} onLoginClick={() => setCurrentPage('login')} role={roleSelected} />
+      return <SignupPage onSignupSuccess={(name) => { setUserName(name || 'User'); navigateToPage('login') }} onLoginClick={() => navigateToPage('login')} role={roleSelected} />
     }
 
     if (currentPage === 'login') {
       // render role-specific login when a role was chosen
       if (roleSelected === 'volunteer') {
         if (volunteerSubRole === 'donor') {
-          return <DonorLogin onSignupClick={() => setCurrentPage('signup')} onLogin={(name, phone, id) => {
+          return <DonorLogin onSignupClick={() => navigateToPage('signup')} onLogin={(name, phone, id) => {
             setUserName(name || 'User')
             setUserPhone(phone || '')
             setUserId(id)
             setIsLoggedIn(true)
-            setCurrentPage('donor')
+            navigateToPage('donor')
           }} />
         }
-        return <VolunteerLogin onSignupClick={() => setCurrentPage('signup')} onLogin={(name, phone, id) => {
+        return <VolunteerLogin onSignupClick={() => navigateToPage('signup')} onLogin={(name, phone, id) => {
           setUserName(name || 'User')
           setUserPhone(phone || '')
           setUserId(id)
           setIsLoggedIn(true)
-          setCurrentPage('volunteer')
+          navigateToPage('volunteer')
         }} />
       }
       if (roleSelected === 'needy') {
-        return <NeedyLogin onSignupClick={() => setCurrentPage('signup')} onLogin={(name, id) => {
+        return <NeedyLogin onSignupClick={() => navigateToPage('signup')} onLogin={(name, id) => {
           setUserName(name || 'User')
           setUserId(id)
           setIsLoggedIn(true)
-          setCurrentPage('needy')
+          navigateToPage('needy')
         }} />
       }
 
-      return <LoginPage onSignupClick={() => setCurrentPage('signup')} onLogin={(name, id) => {
+      return <LoginPage onSignupClick={() => navigateToPage('signup')} onLogin={(name, id) => {
         setUserName(name || 'User')
         setUserId(id)
         setIsLoggedIn(true)
         if (roleSelected === 'needy') {
-          setCurrentPage('needy')
+          navigateToPage('needy')
         } else if (roleSelected === 'volunteer') {
-          setCurrentPage('volunteer')
+          navigateToPage('volunteer')
         } else {
-          setCurrentPage('dashboard')
+          navigateToPage('dashboard')
         }
       }} role={roleSelected} />
     }
@@ -121,10 +139,11 @@ function App() {
       return <UserProfile
         userId={userId}
         userName={userName}
-        onBack={() => setCurrentPage('dashboard')}
+        onBack={goBack}
         onLogout={() => {
           setIsLoggedIn(false)
           setCurrentPage('dashboard')
+          setPageHistory(['dashboard'])
           setRoleSelected(null)
           setVolunteerSubRole(null)
           setUserId(null)
@@ -138,44 +157,46 @@ function App() {
         userName={userName}
         onVolunteerSelect={() => {
           setVolunteerSubRole('volunteer')
-          setCurrentPage('volunteer')
+          navigateToPage('volunteer')
         }}
         onDonorSelect={() => {
           setVolunteerSubRole('donor')
-          setCurrentPage('donor')
+          navigateToPage('donor')
         }}
       />
     }
     if (currentPage === 'serviceRequestForm') {
       // Render your existing service request form here
       // For now, fallback to Needy (or replace with your form component)
-      return <Needy userName={userName} onProfileClick={() => setCurrentPage('profile')} onBack={() => setCurrentPage('needy')} onServiceRequest={(request) => {
+      return <Needy userName={userName} onProfileClick={() => navigateToPage('profile')} onBack={goBack} onServiceRequest={(request) => {
         setServiceRequests(prev => [...prev, { ...request, id: Date.now(), status: 'Pending' }])
-        setCurrentPage('needy')
+        navigateToPage('needy')
       }} />
     }
     if (currentPage === 'needy') {
       return <NeedyDashboard
         userName={userName}
         requests={serviceRequests}
-        onNewRequest={() => setCurrentPage('serviceRequestForm')}
+        onNewRequest={() => navigateToPage('serviceRequestForm')}
         onPullRequest={(id) => {
           setServiceRequests(prev => prev.filter(r => r.id !== id))
         }}
+        onBack={goBack}
       />
     }
     if (currentPage === 'volunteer') {
-      return <VolunteerDashboard userName={userName} onProfileClick={() => setCurrentPage('profile')} onBack={() => setCurrentPage('dashboard')} serviceRequests={serviceRequests} />
+      return <VolunteerDashboard userName={userName} onProfileClick={() => navigateToPage('profile')} onBack={goBack} serviceRequests={serviceRequests} />
     }
     if (currentPage === 'donor') {
-      return <DonorForm userName={userName} phone={userPhone} onProfileClick={() => setCurrentPage('profile')} onBack={() => setCurrentPage('dashboard')} />
+      return <DonorForm userName={userName} phone={userPhone} onProfileClick={() => navigateToPage('profile')} onBack={goBack} />
     }
     return <Dashboard
       userName={userName}
-      onProfileClick={() => setCurrentPage('profile')}
+      onProfileClick={() => navigateToPage('profile')}
       onLogout={() => {
         setIsLoggedIn(false)
         setCurrentPage('dashboard')
+        setPageHistory(['dashboard'])
         setRoleSelected(null)
         setVolunteerSubRole(null)
         setUserId(null)
@@ -183,11 +204,11 @@ function App() {
         setUserPhone('')
       }}
       onRoleSelect={(role) => {
-        if (role === 'needy') setCurrentPage('needy')
+        if (role === 'needy') navigateToPage('needy')
         if (role === 'volunteer') {
           setRoleSelected('volunteer')
           setVolunteerSubRole(null)
-          setCurrentPage('volunteerOrDonor')
+          navigateToPage('volunteerOrDonor')
         }
       }}
     />
