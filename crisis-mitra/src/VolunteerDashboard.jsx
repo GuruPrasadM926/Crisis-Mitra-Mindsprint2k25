@@ -6,16 +6,18 @@ function VolunteerDashboard({ userName = 'User', onBack }) {
     const [newSkill, setNewSkill] = useState('')
 
     const [completedTasks, setCompletedTasks] = useState([
-        { id: 1, title: 'Food distribution at shelter', date: '2025-10-12' }
+        { id: 1, title: 'Food distribution at shelter', date: '2025-10-12', description: 'Distributed food to 50 people at community shelter' }
     ])
     const [upcomingTasks, setUpcomingTasks] = useState([
-        { id: 1, title: 'Community clean-up', date: '2025-12-20' }
+        { id: 1, title: 'Community clean-up', date: '2025-12-20', description: 'Clean up the local park and surrounding areas' }
     ])
 
     const [alerts, setAlerts] = useState([
-        'Blood donation camp near you on 2025-12-18',
-        'Urgent volunteers needed for flood relief'
+        { id: 1, text: 'Blood donation camp near you on 2025-12-18', details: 'Blood donation drive at Community Hospital. Time: 10 AM - 4 PM. Contact: +91-9876543210' },
+        { id: 2, text: 'Urgent volunteers needed for flood relief', details: 'Help needed for flood relief in nearby areas. Bring supplies and be prepared for outdoor work. Reporting time: 6 AM tomorrow.' }
     ])
+
+    const [expandedAlert, setExpandedAlert] = useState(null)
 
     const addSkill = () => {
         const s = newSkill.trim()
@@ -24,8 +26,26 @@ function VolunteerDashboard({ userName = 'User', onBack }) {
         setNewSkill('')
     }
 
-    const dismissAlert = (index) => {
-        setAlerts(prev => prev.filter((_, i) => i !== index))
+    const deleteSkill = (index) => {
+        setSkills(prev => prev.filter((_, i) => i !== index))
+    }
+
+    const acceptAlert = (alertId) => {
+        const alert = alerts.find(a => a.id === alertId)
+        setExpandedAlert(alert)
+    }
+
+    const removeAlert = (alertId) => {
+        setAlerts(prev => prev.filter(a => a.id !== alertId))
+        setExpandedAlert(null)
+    }
+
+    const markTaskComplete = (taskId) => {
+        const task = upcomingTasks.find(t => t.id === taskId)
+        if (task) {
+            setCompletedTasks(prev => [...prev, task])
+            setUpcomingTasks(prev => prev.filter(t => t.id !== taskId))
+        }
     }
 
     return (
@@ -43,7 +63,12 @@ function VolunteerDashboard({ userName = 'User', onBack }) {
                     <div className="card">
                         <h3>Skills</h3>
                         <ul className="skills-list">
-                            {skills.map((s, i) => <li key={i}>{s}</li>)}
+                            {skills.map((s, i) => (
+                                <li key={i} className="skill-item">
+                                    <span>{s}</span>
+                                    <button className="delete-skill" onClick={() => deleteSkill(i)} title="Delete skill">🗑️</button>
+                                </li>
+                            ))}
                         </ul>
 
                         <div className="add-skill">
@@ -56,7 +81,13 @@ function VolunteerDashboard({ userName = 'User', onBack }) {
                         <h3>Upcoming Tasks</h3>
                         <ul>
                             {upcomingTasks.map(t => (
-                                <li key={t.id}>{t.title} — <span className="muted">{t.date}</span></li>
+                                <li key={t.id} className="task-item">
+                                    <div className="task-content">
+                                        <strong>{t.title}</strong>
+                                        <span className="muted">{t.date}</span>
+                                    </div>
+                                    <button className="mark-complete" onClick={() => markTaskComplete(t.id)} title="Mark as complete">✓</button>
+                                </li>
                             ))}
                         </ul>
                     </div>
@@ -65,22 +96,40 @@ function VolunteerDashboard({ userName = 'User', onBack }) {
                 <aside className="vdb-right">
                     <div className="card alerts">
                         <h3>Alerts</h3>
-                        {alerts.length === 0 && <p className="muted">No new alerts</p>}
-                        <ul>
-                            {alerts.map((a, i) => (
-                                <li key={i} className="alert-item">
-                                    <span>{a}</span>
-                                    <button className="dismiss" onClick={() => dismissAlert(i)}>Dismiss</button>
-                                </li>
-                            ))}
-                        </ul>
+                        {expandedAlert ? (
+                            <div className="alert-details">
+                                <button className="close-details" onClick={() => setExpandedAlert(null)}>✕</button>
+                                <h4>{expandedAlert.text}</h4>
+                                <div className="details-content">
+                                    <p>{expandedAlert.details}</p>
+                                </div>
+                                <button className="remove-alert" onClick={() => removeAlert(expandedAlert.id)}>Remove Alert</button>
+                            </div>
+                        ) : (
+                            <>
+                                {alerts.length === 0 && <p className="muted">No new alerts</p>}
+                                <ul className="alerts-list">
+                                    {alerts.map(a => (
+                                        <li key={a.id} className="alert-item">
+                                            <span className="alert-text">{a.text}</span>
+                                            <button className="accept-alert" onClick={() => acceptAlert(a.id)}>Accept</button>
+                                        </li>
+                                    ))}
+                                </ul>
+                            </>
+                        )}
                     </div>
 
                     <div className="card">
                         <h3>Completed Tasks</h3>
-                        <ul>
+                        <ul className="completed-tasks-list">
                             {completedTasks.map(t => (
-                                <li key={t.id}>{t.title} — <span className="muted">{t.date}</span></li>
+                                <li key={t.id} className="completed-task-item">
+                                    <div className="task-info">
+                                        <strong>{t.title}</strong>
+                                        <span className="muted">{t.date}</span>
+                                    </div>
+                                </li>
                             ))}
                         </ul>
                     </div>

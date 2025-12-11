@@ -87,6 +87,26 @@
     border-bottom: 1px dashed #eee
 }
 
+.skill-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+}
+
+.delete-skill {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    padding: 2px 6px;
+    transition: transform 0.2s ease;
+}
+
+.delete-skill:hover {
+    transform: scale(1.2);
+}
+
 .add-skill {
     display: flex;
     gap: 8px
@@ -120,21 +140,130 @@
     padding: 0
 }
 
+.alerts-list {
+    max-height: 300px;
+    overflow-y: auto;
+    padding-right: 8px;
+}
+
+.alerts-list::-webkit-scrollbar {
+    width: 6px;
+}
+
+.alerts-list::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+}
+
+.alerts-list::-webkit-scrollbar-thumb {
+    background: #ccc;
+    border-radius: 10px;
+}
+
+.alerts-list::-webkit-scrollbar-thumb:hover {
+    background: #999;
+}
+
 .alert-item {
     display: flex;
     justify-content: space-between;
     gap: 8px;
     align-items: center;
-    padding: 8px 0;
-    border-bottom: 1px solid #f1f1f1
+    padding: 10px;
+    border-bottom: 1px solid #f1f1f1;
+    border-radius: 4px;
+    transition: background 0.2s ease;
 }
 
-.alert-item .dismiss {
-    background: #eee;
+.alert-item:hover {
+    background: #f9f9f9;
+}
+
+.alert-text {
+    color: #000;
+    font-size: 14px;
+    flex: 1;
+    word-wrap: break-word;
+}
+
+.accept-alert {
+    background: #4caf50;
+    color: #fff;
     border: none;
-    padding: 6px 8px;
-    border-radius: 6px;
-    cursor: pointer
+    padding: 6px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 600;
+    white-space: nowrap;
+    transition: background 0.2s ease;
+}
+
+.accept-alert:hover {
+    background: #45a049;
+}
+
+.alert-details {
+    position: relative;
+    background: #f9f9f9;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 16px;
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.close-details {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background: none;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+    color: #999;
+}
+
+.close-details:hover {
+    color: #333;
+}
+
+.alert-details h4 {
+    margin: 0 0 12px 0;
+    color: #000;
+    font-size: 16px;
+}
+
+.details-content {
+    margin: 12px 0;
+    padding: 12px;
+    background: #fff;
+    border-left: 3px solid #667eea;
+    border-radius: 4px;
+}
+
+.details-content p {
+    margin: 0;
+    color: #333;
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+.remove-alert {
+    width: 100%;
+    padding: 10px;
+    background: #f44336;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background 0.2s ease;
+    margin-top: 8px;
+}
+
+.remove-alert:hover {
+    background: #da190b;
 }
 
 @media (max-width: 900px) {
@@ -145,4 +274,86 @@
     .vdb-right {
         order: 2
     }
+
+    .alerts-list {
+        max-height: 200px;
+    }
+}
+
+.task-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    border-bottom: 1px dashed #eee;
+    transition: background 0.2s ease;
+}
+
+.task-item:hover {
+    background: #f9f9f9;
+}
+
+.task-content {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    flex: 1;
+}
+
+.task-content strong {
+    color: #000;
+    font-size: 14px;
+}
+
+.mark-complete {
+    background: #4caf50;
+    color: #fff;
+    border: none;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s ease;
+    margin-left: 8px;
+}
+
+.mark-complete:hover {
+    background: #45a049;
+}
+
+.completed-tasks-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.completed-task-item {
+    padding: 10px;
+    border-bottom: 1px dashed #eee;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.completed-task-item::before {
+    content: '✓';
+    color: #4caf50;
+    font-weight: bold;
+    font-size: 16px;
+}
+
+.task-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    flex: 1;
+}
+
+.task-info strong {
+    color: #000;
+    font-size: 14px;
 }
