@@ -66,7 +66,7 @@ function VolunteerDashboard({ userName = 'User', onBack, onProfileClick }) {
             <header className="vdb-header">
                 <div className="header-inner">
                     <button className="back-btn" onClick={onBack}>← Back</button>
-                    <div className="vdb-title">SEVA HUB</div>yy
+                    <div className="vdb-title">SEVA HUB</div>
                     <div className="profile-small" onClick={onProfileClick} style={{cursor: 'pointer'}}>👤 {userName}</div>
                 </div>
             </header>
