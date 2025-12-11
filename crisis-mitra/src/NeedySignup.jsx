@@ -62,10 +62,10 @@ function NeedySignup({ onSignupSuccess, onLoginClick, onBack }) {
 
     return (
         <div className="signup-container">
+            {onBack && (
+                <button className="back-btn-header" onClick={onBack} title="Go back">← Back</button>
+            )}
             <div className="signup-box">
-                {onBack && (
-                    <button className="back-btn" onClick={onBack} style={{ marginBottom: '20px' }}>← Back</button>
-                )}
                 <h1>SEVA HUB</h1>
                 <p className="subtitle">Needy Sign Up</p>
 
