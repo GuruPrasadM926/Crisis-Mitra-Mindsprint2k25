@@ -7,13 +7,13 @@ function DonorForm({ userName = 'User', phone = '', onBack, onProfileClick }) {
         phone: phone,
         age: '',
         bloodType: '',
-        chronicDiseases: false,
+        chronicDiseases: '', // 'yes' or 'no'
         chronicDiseasesList: [],
-        recentIllness: false,
+        recentIllness: '', // 'yes' or 'no'
         recentIllnessList: [],
-        vaccines: false,
+        vaccines: '', // 'yes' or 'no'
         vaccinesDays: '',
-        alcoholDrugs: false,
+        alcoholDrugs: '', // 'yes' or 'no'
         alcoholDrugsDays: '',
         guardianName: '',
         guardianRelationship: '',
@@ -28,10 +28,10 @@ function DonorForm({ userName = 'User', phone = '', onBack, onProfileClick }) {
     const relationships = ['Mother', 'Father', 'Brother', 'Sister', 'Spouse', 'Son', 'Daughter', 'Other']
 
     const handleChange = (e) => {
-        const { name, value, type, checked } = e.target
+        const { name, value, type } = e.target
         setFormData(prev => ({
             ...prev,
-            [name]: type === 'checkbox' ? checked : value
+            [name]: value
         }))
     }
 
@@ -63,24 +63,24 @@ function DonorForm({ userName = 'User', phone = '', onBack, onProfileClick }) {
         }
 
         // Vaccines validation
-        if (formData.vaccines && !formData.vaccinesDays) {
+        if (formData.vaccines === 'yes' && !formData.vaccinesDays) {
             setError('Please enter number of days since vaccine')
             setSuccess('')
             return
         }
-        if (formData.vaccines && parseInt(formData.vaccinesDays) < 14) {
+        if (formData.vaccines === 'yes' && parseInt(formData.vaccinesDays) < 14) {
             setError('You must wait at least 2 weeks (14 days) after vaccination to donate')
             setSuccess('')
             return
         }
 
         // Alcohol/Drugs/Tobacco validation
-        if (formData.alcoholDrugs && !formData.alcoholDrugsDays) {
+        if (formData.alcoholDrugs === 'yes' && !formData.alcoholDrugsDays) {
             setError('Please enter number of days since alcohol/drugs/tobacco consumption')
             setSuccess('')
             return
         }
-        if (formData.alcoholDrugs && parseInt(formData.alcoholDrugsDays) < 2) {
+        if (formData.alcoholDrugs === 'yes' && parseInt(formData.alcoholDrugsDays) < 2) {
             setError('You must wait at least 2 days after alcohol/drugs/tobacco consumption to donate')
             setSuccess('')
             return
@@ -112,13 +112,13 @@ function DonorForm({ userName = 'User', phone = '', onBack, onProfileClick }) {
                 phone: phone,
                 age: '',
                 bloodType: '',
-                chronicDiseases: false,
+                chronicDiseases: '',
                 chronicDiseasesList: [],
-                recentIllness: false,
+                recentIllness: '',
                 recentIllnessList: [],
-                vaccines: false,
+                vaccines: '',
                 vaccinesDays: '',
-                alcoholDrugs: false,
+                alcoholDrugs: '',
                 alcoholDrugsDays: '',
                 guardianName: '',
                 guardianRelationship: '',
@@ -218,63 +218,95 @@ function DonorForm({ userName = 'User', phone = '', onBack, onProfileClick }) {
                         <div className="form-section">
                             <h3>Health Information</h3>
 
-                            <div className="form-group checkbox-group">
-                                <label>
-                                    <input
-                                        type="checkbox"
-                                        name="chronicDiseases"
-                                        checked={formData.chronicDiseases}
-                                        onChange={handleChange}
-                                    />
-                                    Do you have any chronic diseases?
-                                </label>
+                            <div className="form-group radio-group">
+                                <label>Do you have any chronic diseases?</label>
+                                <div>
+                                    <label>
+                                        <input
+                                            type="radio"
+                                            name="chronicDiseases"
+                                            value="yes"
+                                            checked={formData.chronicDiseases === 'yes'}
+                                            onChange={handleChange}
+                                        /> Yes
+                                    </label>
+                                    <label style={{ marginLeft: '1em' }}>
+                                        <input
+                                            type="radio"
+                                            name="chronicDiseases"
+                                            value="no"
+                                            checked={formData.chronicDiseases === 'no'}
+                                            onChange={handleChange}
+                                        /> No
+                                    </label>
+                                </div>
                             </div>
 
-                            {formData.chronicDiseases && (
-                                <div className="checkbox-list">
+                            {formData.chronicDiseases === 'yes' && (
+                                <div className="checkbox-list tickbox-list">
                                     <p className="checkbox-label">Select all that apply:</p>
-                                    {chronicDiseaseOptions.map(disease => (
-                                        <div key={disease} className="checkbox-item">
-                                            <input
-                                                type="checkbox"
-                                                id={`disease-${disease}`}
-                                                value={disease}
-                                                checked={formData.chronicDiseasesList.includes(disease)}
-                                                onChange={(e) => handleCheckboxListChange(e, 'chronicDiseasesList')}
-                                            />
-                                            <label htmlFor={`disease-${disease}`}>{disease}</label>
-                                        </div>
-                                    ))}
+                                    <div className="tickbox-grid">
+                                        {chronicDiseaseOptions.map(disease => (
+                                            <label key={disease} className="tickbox-item">
+                                                <input
+                                                    type="checkbox"
+                                                    id={`disease-${disease}`}
+                                                    value={disease}
+                                                    checked={formData.chronicDiseasesList.includes(disease)}
+                                                    onChange={(e) => handleCheckboxListChange(e, 'chronicDiseasesList')}
+                                                    className="tickbox-input"
+                                                />
+                                                <span className="tickbox-custom"></span>
+                                                <span className="tickbox-label-text">{disease}</span>
+                                            </label>
+                                        ))}
+                                    </div>
                                 </div>
                             )}
 
-                            <div className="form-group checkbox-group">
-                                <label>
-                                    <input
-                                        type="checkbox"
-                                        name="recentIllness"
-                                        checked={formData.recentIllness}
-                                        onChange={handleChange}
-                                    />
-                                    Have you had any recent illness?
-                                </label>
+                            <div className="form-group radio-group">
+                                <label>Have you had any recent illness?</label>
+                                <div>
+                                    <label>
+                                        <input
+                                            type="radio"
+                                            name="recentIllness"
+                                            value="yes"
+                                            checked={formData.recentIllness === 'yes'}
+                                            onChange={handleChange}
+                                        /> Yes
+                                    </label>
+                                    <label style={{ marginLeft: '1em' }}>
+                                        <input
+                                            type="radio"
+                                            name="recentIllness"
+                                            value="no"
+                                            checked={formData.recentIllness === 'no'}
+                                            onChange={handleChange}
+                                        /> No
+                                    </label>
+                                </div>
                             </div>
 
-                            {formData.recentIllness && (
-                                <div className="checkbox-list">
+                            {formData.recentIllness === 'yes' && (
+                                <div className="checkbox-list tickbox-list">
                                     <p className="checkbox-label">Select all that apply:</p>
-                                    {recentIllnessOptions.map(illness => (
-                                        <div key={illness} className="checkbox-item">
-                                            <input
-                                                type="checkbox"
-                                                id={`illness-${illness}`}
-                                                value={illness}
-                                                checked={formData.recentIllnessList.includes(illness)}
-                                                onChange={(e) => handleCheckboxListChange(e, 'recentIllnessList')}
-                                            />
-                                            <label htmlFor={`illness-${illness}`}>{illness}</label>
-                                        </div>
-                                    ))}
+                                    <div className="tickbox-grid">
+                                        {recentIllnessOptions.map(illness => (
+                                            <label key={illness} className="tickbox-item">
+                                                <input
+                                                    type="checkbox"
+                                                    id={`illness-${illness}`}
+                                                    value={illness}
+                                                    checked={formData.recentIllnessList.includes(illness)}
+                                                    onChange={(e) => handleCheckboxListChange(e, 'recentIllnessList')}
+                                                    className="tickbox-input"
+                                                />
+                                                <span className="tickbox-custom"></span>
+                                                <span className="tickbox-label-text">{illness}</span>
+                                            </label>
+                                        ))}
+                                    </div>
                                 </div>
                             )}
                         </div>
@@ -283,19 +315,31 @@ function DonorForm({ userName = 'User', phone = '', onBack, onProfileClick }) {
                         <div className="form-section">
                             <h3>Vaccination & Lifestyle</h3>
 
-                            <div className="form-group checkbox-group">
-                                <label>
-                                    <input
-                                        type="checkbox"
-                                        name="vaccines"
-                                        checked={formData.vaccines}
-                                        onChange={handleChange}
-                                    />
-                                    Have you taken any vaccines recently?
-                                </label>
+                            <div className="form-group radio-group">
+                                <label>Have you taken any vaccines recently?</label>
+                                <div>
+                                    <label>
+                                        <input
+                                            type="radio"
+                                            name="vaccines"
+                                            value="yes"
+                                            checked={formData.vaccines === 'yes'}
+                                            onChange={handleChange}
+                                        /> Yes
+                                    </label>
+                                    <label style={{ marginLeft: '1em' }}>
+                                        <input
+                                            type="radio"
+                                            name="vaccines"
+                                            value="no"
+                                            checked={formData.vaccines === 'no'}
+                                            onChange={handleChange}
+                                        /> No
+                                    </label>
+                                </div>
                             </div>
 
-                            {formData.vaccines && (
+                            {formData.vaccines === 'yes' && (
                                 <div className="form-group">
                                     <label htmlFor="vaccinesDays">Days since vaccination *</label>
                                     <input
@@ -311,19 +355,31 @@ function DonorForm({ userName = 'User', phone = '', onBack, onProfileClick }) {
                                 </div>
                             )}
 
-                            <div className="form-group checkbox-group">
-                                <label>
-                                    <input
-                                        type="checkbox"
-                                        name="alcoholDrugs"
-                                        checked={formData.alcoholDrugs}
-                                        onChange={handleChange}
-                                    />
-                                    Have you consumed alcohol, drugs, or tobacco recently?
-                                </label>
+                            <div className="form-group radio-group">
+                                <label>Have you consumed alcohol, drugs, or tobacco recently?</label>
+                                <div>
+                                    <label>
+                                        <input
+                                            type="radio"
+                                            name="alcoholDrugs"
+                                            value="yes"
+                                            checked={formData.alcoholDrugs === 'yes'}
+                                            onChange={handleChange}
+                                        /> Yes
+                                    </label>
+                                    <label style={{ marginLeft: '1em' }}>
+                                        <input
+                                            type="radio"
+                                            name="alcoholDrugs"
+                                            value="no"
+                                            checked={formData.alcoholDrugs === 'no'}
+                                            onChange={handleChange}
+                                        /> No
+                                    </label>
+                                </div>
                             </div>
 
-                            {formData.alcoholDrugs && (
+                            {formData.alcoholDrugs === 'yes' && (
                                 <div className="form-group">
                                     <label htmlFor="alcoholDrugsDays">Days since consumption *</label>
                                     <input
