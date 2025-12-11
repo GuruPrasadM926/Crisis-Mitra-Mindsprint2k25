@@ -22,6 +22,7 @@ function DonorDashboard({
         { id: 3, bloodType: userBloodType, units: 3, hospital: 'Medical Centre', urgency: 'Critical' }
     ]
 
+    // Use incoming alerts from props, or default alerts if none provided
     const alerts = incomingAlerts.length > 0 ? incomingAlerts : defaultIncomingAlerts
 
     const handleAccept = (alert) => {

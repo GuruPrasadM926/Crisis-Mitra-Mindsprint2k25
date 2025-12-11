@@ -226,7 +226,27 @@ function App() {
       // Render your existing service request form here
       // For now, fallback to Needy (or replace with your form component)
       return <Needy userName={userName} onProfileClick={() => navigateToPage('profile')} onBack={goBack} onServiceRequest={(request) => {
-        setServiceRequests(prev => [...prev, { ...request, id: Date.now(), status: 'Pending' }])
+        const newRequest = { ...request, id: Date.now(), status: 'Pending' }
+        setServiceRequests(prev => [...prev, newRequest])
+
+        // If it's a blood or organ request, also add to incoming alerts for donors
+        if (request.service === 'Blood' || request.service === 'Organ') {
+          const alert = {
+            id: newRequest.id,
+            bloodType: request.bloodType,
+            units: 1,
+            hospital: request.place,
+            urgency: 'High',
+            requestType: request.service,
+            organType: request.organType || null,
+            patientAge: request.patientAge || null,
+            requesterName: request.name,
+            requesterContact: request.phone,
+            createdAt: new Date().toISOString()
+          }
+          setIncomingAlerts(prev => [...prev, alert])
+        }
+
         navigateToPage('needy')
       }} />
     }
@@ -237,6 +257,8 @@ function App() {
         onNewRequest={() => navigateToPage('serviceRequestForm')}
         onPullRequest={(id) => {
           setServiceRequests(prev => prev.filter(r => r.id !== id))
+          // Also remove from donor incoming alerts if it was a blood/organ request
+          setIncomingAlerts(prev => prev.filter(a => a.id !== id))
         }}
         onBack={goBack}
       />
