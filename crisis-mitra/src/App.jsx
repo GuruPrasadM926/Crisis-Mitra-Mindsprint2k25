@@ -103,6 +103,19 @@ function App() {
 
   // when logged in
   if (isLoggedIn) {
+    if (currentPage === 'volunteerOrDonor') {
+      return <VolunteerOrDonor
+        userName={userName}
+        onVolunteerSelect={() => {
+          setVolunteerSubRole('volunteer')
+          setCurrentPage('volunteer')
+        }}
+        onDonorSelect={() => {
+          setVolunteerSubRole('donor')
+          setCurrentPage('donor')
+        }}
+      />
+    }
     if (currentPage === 'needy') {
       return <Needy userName={userName} onBack={() => setCurrentPage('dashboard')} />
     }
@@ -114,12 +127,14 @@ function App() {
     }
     return <Dashboard userName={userName} onLogout={() => {
       setIsLoggedIn(false)
-      setCurrentPage('login')
+      setCurrentPage('dashboard')
+      setRoleSelected(null)
       setVolunteerSubRole(null)
     }} onRoleSelect={(role) => {
       // when already logged in, selecting a role can navigate to needy/volunteer
       if (role === 'needy') setCurrentPage('needy')
       if (role === 'volunteer') {
+        setRoleSelected('volunteer')
         setVolunteerSubRole(null)
         setCurrentPage('volunteerOrDonor')
       }
