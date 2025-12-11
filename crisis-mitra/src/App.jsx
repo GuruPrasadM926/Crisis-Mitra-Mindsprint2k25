@@ -252,13 +252,10 @@ function App() {
       // Render your existing service request form here
       // For now, fallback to Needy (or replace with your form component)
       return <Needy userName={userName} onProfileClick={() => navigateToPage('profile')} onBack={goBack} onServiceRequest={(request) => {
-        const newRequest = { ...request, id: Date.now(), status: 'Pending' }
-        setServiceRequests(prev => [...prev, newRequest])
-
-        // If it's a blood or organ request, also add to incoming alerts for donors
+        // Blood and Organ requests go to Donor Dashboard (incoming alerts)
         if (request.service === 'Blood' || request.service === 'Organ') {
           const alert = {
-            id: newRequest.id,
+            id: Date.now(),
             bloodType: request.bloodType,
             units: 1,
             hospital: request.place,
@@ -271,6 +268,10 @@ function App() {
             createdAt: new Date().toISOString()
           }
           setIncomingAlerts(prev => [...prev, alert])
+        } else {
+          // Event Management and Social Service requests go to Volunteer Dashboard
+          const newRequest = { ...request, id: Date.now(), status: 'Pending' }
+          setServiceRequests(prev => [...prev, newRequest])
         }
 
         navigateToPage('needy')

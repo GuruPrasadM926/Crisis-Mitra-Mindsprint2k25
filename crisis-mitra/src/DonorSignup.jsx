@@ -4,9 +4,10 @@ import { userDB } from './TempDB'
 import { calculateAge, getMaxDOB } from './utils'
 
 function DonorSignup({ onSignupSuccess, onLoginClick }) {
-    const [formData, setFormData] = useState({ name: '', phone: '', email: '', city: '', pincode: '', dob: '', password: '', confirmPassword: '' })
+    const [formData, setFormData] = useState({ name: '', phone: '', email: '', city: '', pincode: '', dob: '', bloodType: '', password: '', confirmPassword: '' })
     const [error, setError] = useState('')
     const [success, setSuccess] = useState('')
+    const bloodTypes = ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-']
 
     const handleChange = (e) => {
         const { name, value } = e.target
@@ -15,7 +16,7 @@ function DonorSignup({ onSignupSuccess, onLoginClick }) {
 
     const handleSubmit = (e) => {
         e.preventDefault()
-        if (!formData.name || !formData.phone || !formData.email || !formData.city || !formData.pincode || !formData.dob || !formData.password || !formData.confirmPassword) {
+        if (!formData.name || !formData.phone || !formData.email || !formData.city || !formData.pincode || !formData.dob || !formData.bloodType || !formData.password || !formData.confirmPassword) {
             setError('Please fill in all fields')
             setSuccess('')
             return
@@ -46,7 +47,10 @@ function DonorSignup({ onSignupSuccess, onLoginClick }) {
             city: formData.city,
             pincode: formData.pincode,
             dob: formData.dob,
-            role: 'donor'
+            role: 'donor',
+            donorInfo: {
+                bloodType: formData.bloodType
+            }
         })
 
         if (!result.success) {
@@ -55,7 +59,7 @@ function DonorSignup({ onSignupSuccess, onLoginClick }) {
             return
         }
 
-        setFormData({ name: '', phone: '', email: '', city: '', pincode: '', dob: '', password: '', confirmPassword: '' })
+        setFormData({ name: '', phone: '', email: '', city: '', pincode: '', dob: '', bloodType: '', password: '', confirmPassword: '' })
 
         setTimeout(() => { if (onSignupSuccess) onSignupSuccess(name) }, 1000)
     }
@@ -97,6 +101,16 @@ function DonorSignup({ onSignupSuccess, onLoginClick }) {
                     <div className="form-group">
                         <label htmlFor="dob">Date of Birth</label>
                         <input type="date" id="dob" name="dob" value={formData.dob} onChange={handleChange} max={getMaxDOB()} />
+                    </div>
+
+                    <div className="form-group">
+                        <label htmlFor="bloodType">Blood Type *</label>
+                        <select id="bloodType" name="bloodType" value={formData.bloodType} onChange={handleChange}>
+                            <option value="">Select your blood type</option>
+                            {bloodTypes.map(type => (
+                                <option key={type} value={type}>{type}</option>
+                            ))}
+                        </select>
                     </div>
 
                     <div className="form-group">

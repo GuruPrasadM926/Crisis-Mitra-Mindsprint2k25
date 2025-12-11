@@ -35,7 +35,7 @@ class UserDatabase {
             role: userData.role || 'general',
             profilePhoto: null,
             volunteerSkills: [],
-            donorInfo: null,
+            donorInfo: userData.donorInfo || null,
             history: [],
             registeredAt: new Date().toISOString()
         }

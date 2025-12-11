@@ -43,6 +43,19 @@ function DonorDashboard({
     // Use incoming alerts from props, or default alerts if none provided
     const alerts = incomingAlerts.length > 0 ? incomingAlerts : defaultIncomingAlerts
 
+    // Filter alerts: only show compatible blood type requests for blood and organ donations
+    const compatibleAlerts = alerts.filter(alert => {
+        // Show all alerts that don't have a blood type specified (events, social services)
+        if (!alert.bloodType) return true
+
+        // For blood and organ requests, only show if blood types are compatible
+        const isBloodOrOrgan = alert.requestType === 'Blood' || alert.requestType === 'Organ'
+        if (!isBloodOrOrgan) return true
+
+        // Check compatibility
+        return isBloodTypeCompatible(userBloodType, alert.bloodType)
+    })
+
     const handleAccept = (alert) => {
         if (onAcceptAlert) {
             onAcceptAlert(alert)
@@ -88,15 +101,15 @@ function DonorDashboard({
                 <section className="dashboard-column incoming-alerts-column">
                     <div className="column-header">
                         <h2>🚨 Incoming Alerts</h2>
-                        <span className="alert-count">{alerts.length}</span>
+                        <span className="alert-count">{compatibleAlerts.length}</span>
                     </div>
                     <div className="alerts-list">
-                        {alerts.length === 0 ? (
+                        {compatibleAlerts.length === 0 ? (
                             <div className="empty-state">
-                                <p>No incoming alerts at this time</p>
+                                <p>No compatible alerts at this time</p>
                             </div>
                         ) : (
-                            alerts.map(alert => (
+                            compatibleAlerts.map(alert => (
                                 <div key={alert.id} className={`alert-card incoming-alert urgency-${alert.urgency.toLowerCase()}`}>
                                     <div className="alert-header">
                                         <span className="blood-type-label">{alert.bloodType}</span>
