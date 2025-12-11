@@ -14,10 +14,12 @@ import Volunteer from './Volunteer'
 import VolunteerOrDonor from './VolunteerOrDonor'
 import VolunteerDashboard from './VolunteerDashboard'
 import DonorForm from './DonorForm'
+import UserProfile from './UserProfile'
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false)
   const [currentPage, setCurrentPage] = useState('dashboard') // start at dashboard
+  const [userId, setUserId] = useState(null)
   const [userName, setUserName] = useState('User')
   const [userPhone, setUserPhone] = useState('')
   const [roleSelected, setRoleSelected] = useState(null)
@@ -57,30 +59,34 @@ function App() {
       // render role-specific login when a role was chosen
       if (roleSelected === 'volunteer') {
         if (volunteerSubRole === 'donor') {
-          return <DonorLogin onSignupClick={() => setCurrentPage('signup')} onLogin={(name, phone) => {
+          return <DonorLogin onSignupClick={() => setCurrentPage('signup')} onLogin={(name, phone, id) => {
             setUserName(name || 'User')
             setUserPhone(phone || '')
+            setUserId(id)
             setIsLoggedIn(true)
             setCurrentPage('donor')
           }} />
         }
-        return <VolunteerLogin onSignupClick={() => setCurrentPage('signup')} onLogin={(name, phone) => {
+        return <VolunteerLogin onSignupClick={() => setCurrentPage('signup')} onLogin={(name, phone, id) => {
           setUserName(name || 'User')
           setUserPhone(phone || '')
+          setUserId(id)
           setIsLoggedIn(true)
           setCurrentPage('volunteer')
         }} />
       }
       if (roleSelected === 'needy') {
-        return <NeedyLogin onSignupClick={() => setCurrentPage('signup')} onLogin={(name) => {
+        return <NeedyLogin onSignupClick={() => setCurrentPage('signup')} onLogin={(name, id) => {
           setUserName(name || 'User')
+          setUserId(id)
           setIsLoggedIn(true)
           setCurrentPage('needy')
         }} />
       }
 
-      return <LoginPage onSignupClick={() => setCurrentPage('signup')} onLogin={(name) => {
+      return <LoginPage onSignupClick={() => setCurrentPage('signup')} onLogin={(name, id) => {
         setUserName(name || 'User')
+        setUserId(id)
         setIsLoggedIn(true)
         setCurrentPage(roleSelected === 'needy' ? 'needy' : roleSelected === 'volunteer' ? 'volunteer' : 'dashboard')
       }} role={roleSelected} />
@@ -103,6 +109,20 @@ function App() {
 
   // when logged in
   if (isLoggedIn) {
+    if (currentPage === 'profile') {
+      return <UserProfile
+        userId={userId}
+        userName={userName}
+        onBack={() => setCurrentPage('dashboard')}
+        onLogout={() => {
+          setIsLoggedIn(false)
+          setCurrentPage('dashboard')
+          setRoleSelected(null)
+          setVolunteerSubRole(null)
+          setUserId(null)
+        }}
+      />
+    }
     if (currentPage === 'volunteerOrDonor') {
       return <VolunteerOrDonor
         userName={userName}
@@ -117,28 +137,33 @@ function App() {
       />
     }
     if (currentPage === 'needy') {
-      return <Needy userName={userName} onBack={() => setCurrentPage('dashboard')} />
+      return <Needy userName={userName} onProfileClick={() => setCurrentPage('profile')} onBack={() => setCurrentPage('dashboard')} />
     }
     if (currentPage === 'volunteer') {
-      return <VolunteerDashboard userName={userName} onBack={() => setCurrentPage('dashboard')} />
+      return <VolunteerDashboard userName={userName} onProfileClick={() => setCurrentPage('profile')} onBack={() => setCurrentPage('dashboard')} />
     }
     if (currentPage === 'donor') {
-      return <DonorForm userName={userName} phone={userPhone} onBack={() => setCurrentPage('dashboard')} />
+      return <DonorForm userName={userName} phone={userPhone} onProfileClick={() => setCurrentPage('profile')} onBack={() => setCurrentPage('dashboard')} />
     }
-    return <Dashboard userName={userName} onLogout={() => {
-      setIsLoggedIn(false)
-      setCurrentPage('dashboard')
-      setRoleSelected(null)
-      setVolunteerSubRole(null)
-    }} onRoleSelect={(role) => {
-      // when already logged in, selecting a role can navigate to needy/volunteer
-      if (role === 'needy') setCurrentPage('needy')
-      if (role === 'volunteer') {
-        setRoleSelected('volunteer')
+    return <Dashboard
+      userName={userName}
+      onProfileClick={() => setCurrentPage('profile')}
+      onLogout={() => {
+        setIsLoggedIn(false)
+        setCurrentPage('dashboard')
+        setRoleSelected(null)
         setVolunteerSubRole(null)
-        setCurrentPage('volunteerOrDonor')
-      }
-    }} />
+        setUserId(null)
+      }}
+      onRoleSelect={(role) => {
+        if (role === 'needy') setCurrentPage('needy')
+        if (role === 'volunteer') {
+          setRoleSelected('volunteer')
+          setVolunteerSubRole(null)
+          setCurrentPage('volunteerOrDonor')
+        }
+      }}
+    />
   }
 }
 

@@ -135,7 +135,7 @@ function DonorForm({ userName = 'User', phone = '', onBack }) {
                     <button className="back-btn" onClick={onBack}>← Back</button>
                     <h1>SEVA HUB</h1>
                     <div className="profile-top">
-                        <div className="profile-icon-small">👤</div>
+                        <div className="profile-small" onClick={onProfileClick} style={{ cursor: 'pointer' }}>👤 {userName}</div>
                         <span className="user-name-small">{userName}</span>
                     </div>
                 </div>

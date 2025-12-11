@@ -31,7 +31,12 @@ class UserDatabase {
             password: userData.password,
             city: userData.city || '',
             pincode: userData.pincode || '',
+            dob: userData.dob || '',
             role: userData.role || 'general',
+            profilePhoto: null,
+            volunteerSkills: [],
+            donorInfo: null,
+            history: [],
             registeredAt: new Date().toISOString()
         }
 
@@ -71,6 +76,29 @@ class UserDatabase {
         this.users[index] = { ...this.users[index], ...userData }
         this.saveUsers()
         return { success: true, message: 'User updated successfully', user: this.users[index] }
+    }
+
+    // Add skill to user
+    addSkill(id, skill) {
+        const user = this.getUserById(id)
+        if (!user) return { success: false, message: 'User not found' }
+        if (!user.volunteerSkills) user.volunteerSkills = []
+        if (!user.volunteerSkills.includes(skill)) {
+            user.volunteerSkills.push(skill)
+            this.saveUsers()
+        }
+        return { success: true, message: 'Skill added', user }
+    }
+
+    // Remove skill from user
+    removeSkill(id, skill) {
+        const user = this.getUserById(id)
+        if (!user) return { success: false, message: 'User not found' }
+        if (user.volunteerSkills) {
+            user.volunteerSkills = user.volunteerSkills.filter(s => s !== skill)
+            this.saveUsers()
+        }
+        return { success: true, message: 'Skill removed', user }
     }
 
     // Get all users (for admin/debugging)

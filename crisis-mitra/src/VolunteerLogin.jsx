@@ -1,22 +1,24 @@
 import { useState } from 'react'
 import './LoginPage.css'
 import { userDB } from './TempDB'
+import { calculateAge, getMaxDOB } from './utils'
 
 function VolunteerLogin({ onSignupClick, onLogin }) {
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
-    const [age, setAge] = useState('')
+    const [dob, setDob] = useState('')
     const [error, setError] = useState('')
 
     const handleSubmit = (e) => {
         e.preventDefault()
 
-        if (!email || !password || !age) {
+        if (!email || !password || !dob) {
             setError('Please fill in all fields')
             return
         }
 
-        if (parseInt(age) < 18) {
+        const age = calculateAge(dob)
+        if (age < 18) {
             setError('You must be at least 18 years old to login')
             return
         }
@@ -34,7 +36,7 @@ function VolunteerLogin({ onSignupClick, onLogin }) {
 
         // Use actual stored name and phone from database
         const phone = result.user.phone || '9999999999'
-        if (onLogin) onLogin(result.user.name, phone)
+        if (onLogin) onLogin(result.user.name, phone, result.user.id)
     }
 
     return (
@@ -67,14 +69,13 @@ function VolunteerLogin({ onSignupClick, onLogin }) {
                     </div>
 
                     <div className="form-group">
-                        <label htmlFor="age">Your Age</label>
+                        <label htmlFor="dob">Date of Birth</label>
                         <input
-                            type="number"
-                            id="age"
-                            value={age}
-                            onChange={(e) => setAge(e.target.value)}
-                            placeholder="Enter your age"
-                            min="18"
+                            type="date"
+                            id="dob"
+                            value={dob}
+                            onChange={(e) => setDob(e.target.value)}
+                            max={getMaxDOB()}
                         />
                     </div>
 

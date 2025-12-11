@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import './SignupPage.css'
 import { userDB } from './TempDB'
+import { calculateAge, getMaxDOB } from './utils'
 
 function SignupPage({ onSignupSuccess, onLoginClick }) {
     const [formData, setFormData] = useState({
@@ -9,6 +10,7 @@ function SignupPage({ onSignupSuccess, onLoginClick }) {
         email: '',
         city: '',
         pincode: '',
+        dob: '',
         password: '',
         confirmPassword: ''
     })
@@ -27,8 +29,16 @@ function SignupPage({ onSignupSuccess, onLoginClick }) {
         e.preventDefault()
 
         // Validation
-        if (!formData.name || !formData.phone || !formData.email || !formData.city || !formData.pincode || !formData.password || !formData.confirmPassword) {
+        if (!formData.name || !formData.phone || !formData.email || !formData.city || !formData.pincode || !formData.dob || !formData.password || !formData.confirmPassword) {
             setError('Please fill in all fields')
+            setSuccess('')
+            return
+        }
+
+        // Age validation
+        const age = calculateAge(formData.dob)
+        if (age < 18) {
+            setError('You must be at least 18 years old')
             setSuccess('')
             return
         }
@@ -82,6 +92,7 @@ function SignupPage({ onSignupSuccess, onLoginClick }) {
             password: formData.password,
             city: formData.city,
             pincode: formData.pincode,
+            dob: formData.dob,
             role: 'general'
         })
 
@@ -100,6 +111,7 @@ function SignupPage({ onSignupSuccess, onLoginClick }) {
             email: '',
             city: '',
             pincode: '',
+            dob: '',
             password: '',
             confirmPassword: ''
         })
@@ -179,6 +191,18 @@ function SignupPage({ onSignupSuccess, onLoginClick }) {
                                 placeholder="Enter your pincode"
                             />
                         </div>
+                    </div>
+
+                    <div className="form-group">
+                        <label htmlFor="dob">Date of Birth</label>
+                        <input
+                            type="date"
+                            id="dob"
+                            name="dob"
+                            value={formData.dob}
+                            onChange={handleChange}
+                            max={getMaxDOB()}
+                        />
                     </div>
 
                     <div className="form-group">

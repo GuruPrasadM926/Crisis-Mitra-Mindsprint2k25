@@ -1,9 +1,10 @@
 import { useState } from 'react'
 import './SignupPage.css'
 import { userDB } from './TempDB'
+import { calculateAge, getMaxDOB } from './utils'
 
 function DonorSignup({ onSignupSuccess, onLoginClick }) {
-    const [formData, setFormData] = useState({ name: '', phone: '', email: '', city: '', pincode: '', password: '', confirmPassword: '' })
+    const [formData, setFormData] = useState({ name: '', phone: '', email: '', city: '', pincode: '', dob: '', password: '', confirmPassword: '' })
     const [error, setError] = useState('')
     const [success, setSuccess] = useState('')
 
@@ -14,11 +15,13 @@ function DonorSignup({ onSignupSuccess, onLoginClick }) {
 
     const handleSubmit = (e) => {
         e.preventDefault()
-        if (!formData.name || !formData.phone || !formData.email || !formData.city || !formData.pincode || !formData.password || !formData.confirmPassword) {
+        if (!formData.name || !formData.phone || !formData.email || !formData.city || !formData.pincode || !formData.dob || !formData.password || !formData.confirmPassword) {
             setError('Please fill in all fields')
             setSuccess('')
             return
         }
+        const age = calculateAge(formData.dob)
+        if (age < 18) { setError('You must be at least 18 years old'); setSuccess(''); return }
         if (formData.password.length < 6) { setError('Password must be at least 6 characters long'); setSuccess(''); return }
         if (formData.password !== formData.confirmPassword) { setError('Passwords do not match'); setSuccess(''); return }
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
@@ -42,6 +45,7 @@ function DonorSignup({ onSignupSuccess, onLoginClick }) {
             password: formData.password,
             city: formData.city,
             pincode: formData.pincode,
+            dob: formData.dob,
             role: 'donor'
         })
 
@@ -51,7 +55,7 @@ function DonorSignup({ onSignupSuccess, onLoginClick }) {
             return
         }
 
-        setFormData({ name: '', phone: '', email: '', city: '', pincode: '', password: '', confirmPassword: '' })
+        setFormData({ name: '', phone: '', email: '', city: '', pincode: '', dob: '', password: '', confirmPassword: '' })
 
         setTimeout(() => { if (onSignupSuccess) onSignupSuccess(name) }, 1000)
     }
@@ -88,6 +92,11 @@ function DonorSignup({ onSignupSuccess, onLoginClick }) {
                             <label htmlFor="pincode">Pincode</label>
                             <input type="text" id="pincode" name="pincode" value={formData.pincode} onChange={handleChange} placeholder="Enter your pincode" />
                         </div>
+                    </div>
+
+                    <div className="form-group">
+                        <label htmlFor="dob">Date of Birth</label>
+                        <input type="date" id="dob" name="dob" value={formData.dob} onChange={handleChange} max={getMaxDOB()} />
                     </div>
 
                     <div className="form-group">

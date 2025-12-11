@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import './Dashboard.css'
 
-function Dashboard({ userName = 'User', onLogout, onRoleSelect }) {
+function Dashboard({ userName = 'User', onLogout, onRoleSelect, onProfileClick }) {
     const [selectedRole, setSelectedRole] = useState(null)
 
     const handleRoleSelect = (role) => {
@@ -14,9 +14,16 @@ function Dashboard({ userName = 'User', onLogout, onRoleSelect }) {
             <header className="dashboard-header">
                 <div className="header-content">
                     <h1>SEVA HUB</h1>
-                    <div className="profile-top">
-                        <div className="profile-icon-small">👤</div>
-                        <span className="user-name-small">{userName}</span>
+                    <div className="header-actions">
+                        <button
+                            className="profile-btn"
+                            onClick={onProfileClick}
+                            title="View Profile"
+                        >
+                            <div className="profile-icon-small">👤</div>
+                            <span className="user-name-small">{userName}</span>
+                        </button>
+                        <button className="logout-btn" onClick={onLogout}>Logout</button>
                     </div>
                 </div>
             </header>
