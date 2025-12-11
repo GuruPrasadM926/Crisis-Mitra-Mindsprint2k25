@@ -15,6 +15,24 @@ function DonorDashboard({
 }) {
     const [selectedUpcoming, setSelectedUpcoming] = useState(null)
 
+    // Blood type compatibility checker (Universal donor rules)
+    const isBloodTypeCompatible = (donorType, neededType) => {
+        if (!donorType || !neededType) return false
+
+        const compatibility = {
+            'O-': ['O-', 'O+', 'A-', 'A+', 'B-', 'B+', 'AB-', 'AB+'], // Universal donor
+            'O+': ['O+', 'A+', 'B+', 'AB+'],
+            'A-': ['A-', 'A+', 'AB-', 'AB+'],
+            'A+': ['A+', 'AB+'],
+            'B-': ['B-', 'B+', 'AB-', 'AB+'],
+            'B+': ['B+', 'AB+'],
+            'AB-': ['AB-', 'AB+'],
+            'AB+': ['AB+']
+        }
+
+        return compatibility[donorType]?.includes(neededType) || false
+    }
+
     // Sample incoming alerts if none provided
     const defaultIncomingAlerts = [
         { id: 1, bloodType: 'O+', units: 2, hospital: 'City General Hospital', urgency: 'High' },
@@ -88,18 +106,18 @@ function DonorDashboard({
                                         <p><strong>Units Needed:</strong> {alert.units}</p>
                                         <p><strong>Location:</strong> {alert.hospital}</p>
                                     </div>
-                                    {userBloodType && alert.bloodType !== userBloodType && (
+                                    {userBloodType && !isBloodTypeCompatible(userBloodType, alert.bloodType) && (
                                         <div style={{ padding: '10px', backgroundColor: '#ffebee', borderRadius: '6px', marginBottom: '10px', color: '#c92a2a', fontSize: '13px', fontWeight: '600', textAlign: 'center' }}>
-                                            Blood type doesn't match
+                                            Blood type not compatible with universal donor rules
                                         </div>
                                     )}
                                     <button
                                         className="accept-btn"
                                         onClick={() => handleAccept(alert)}
-                                        disabled={userBloodType && alert.bloodType !== userBloodType}
+                                        disabled={userBloodType && !isBloodTypeCompatible(userBloodType, alert.bloodType)}
                                         style={{
-                                            opacity: userBloodType && alert.bloodType !== userBloodType ? 0.5 : 1,
-                                            cursor: userBloodType && alert.bloodType !== userBloodType ? 'not-allowed' : 'pointer'
+                                            opacity: userBloodType && !isBloodTypeCompatible(userBloodType, alert.bloodType) ? 0.5 : 1,
+                                            cursor: userBloodType && !isBloodTypeCompatible(userBloodType, alert.bloodType) ? 'not-allowed' : 'pointer'
                                         }}
                                     >
                                         ✓ Accept

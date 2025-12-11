@@ -19,6 +19,24 @@ import DonorForm from './DonorForm'
 import UserProfile from './UserProfile'
 
 function App() {
+  // Blood type compatibility checker
+  const isBloodTypeCompatible = (donorType, neededType) => {
+    if (!donorType || !neededType) return false
+
+    const compatibility = {
+      'O-': ['O-', 'O+', 'A-', 'A+', 'B-', 'B+', 'AB-', 'AB+'], // Universal donor
+      'O+': ['O+', 'A+', 'B+', 'AB+'],
+      'A-': ['A-', 'A+', 'AB-', 'AB+'],
+      'A+': ['A+', 'AB+'],
+      'B-': ['B-', 'B+', 'AB-', 'AB+'],
+      'B+': ['B+', 'AB+'],
+      'AB-': ['AB-', 'AB+'],
+      'AB+': ['AB+']
+    }
+
+    return compatibility[donorType]?.includes(neededType) || false
+  }
+
   const [isLoggedIn, setIsLoggedIn] = useState(false)
   const [currentPage, setCurrentPage] = useState('dashboard') // start at dashboard
   const [userId, setUserId] = useState(null)
@@ -67,14 +85,22 @@ function App() {
     }
 
     if (currentAlertBeingAccepted) {
-      const upcomingAlert = {
-        ...currentAlertBeingAccepted,
-        acceptedAt: new Date().toISOString()
+      // Check blood type compatibility before accepting
+      if (formData && isBloodTypeCompatible(formData.bloodType, currentAlertBeingAccepted.bloodType)) {
+        const upcomingAlert = {
+          ...currentAlertBeingAccepted,
+          acceptedAt: new Date().toISOString()
+        }
+        setUpcomingAlerts(prev => [...prev, upcomingAlert])
+        setIncomingAlerts(prev => prev.filter(a => a.id !== currentAlertBeingAccepted.id))
+        setCurrentAlertBeingAccepted(null)
+        navigateToPage('donor')
+      } else {
+        // Blood type not compatible - alert stays in incoming, go back to dashboard
+        alert('Your blood type is not compatible with the requested blood type. Please select a compatible request.')
+        setCurrentAlertBeingAccepted(null)
+        navigateToPage('donor')
       }
-      setUpcomingAlerts(prev => [...prev, upcomingAlert])
-      setIncomingAlerts(prev => prev.filter(a => a.id !== currentAlertBeingAccepted.id))
-      setCurrentAlertBeingAccepted(null)
-      navigateToPage('donor')
     } else {
       // If not accepting an alert, just redirect back to donor dashboard
       navigateToPage('donor')
@@ -270,7 +296,6 @@ function App() {
       return <DonorForm
         userName={userName}
         phone={userPhone}
-        age={userAge}
         onBack={goBack}
         onProfileClick={() => navigateToPage('profile')}
         onSubmit={handleDonorFormSubmit}
