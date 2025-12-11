@@ -32,7 +32,20 @@ function VolunteerDashboard({ userName = 'User', onBack, onProfileClick }) {
 
     const acceptAlert = (alertId) => {
         const alert = alerts.find(a => a.id === alertId)
-        setExpandedAlert(alert)
+        
+        // Add alert to upcoming tasks
+        if (alert) {
+            const newTask = {
+                id: upcomingTasks.length > 0 ? Math.max(...upcomingTasks.map(t => t.id)) + 1 : 1,
+                title: alert.text,
+                date: new Date().toISOString().split('T')[0],
+                description: alert.details
+            }
+            setUpcomingTasks(prev => [...prev, newTask])
+            // Remove alert after accepting
+            setAlerts(prev => prev.filter(a => a.id !== alertId))
+            setExpandedAlert(null)
+        }
     }
 
     const removeAlert = (alertId) => {
@@ -85,6 +98,7 @@ function VolunteerDashboard({ userName = 'User', onBack, onProfileClick }) {
                                     <div className="task-content">
                                         <strong>{t.title}</strong>
                                         <span className="muted">{t.date}</span>
+                                        {t.description && <p className="task-description">{t.description}</p>}
                                     </div>
                                     <button className="mark-complete" onClick={() => markTaskComplete(t.id)} title="Mark as complete">✓</button>
                                 </li>
