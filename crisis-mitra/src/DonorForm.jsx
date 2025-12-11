@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import './DonorForm.css'
 
-function DonorForm({ userName = 'User', phone = '', onBack }) {
+function DonorForm({ userName = 'User', phone = '', onBack, onProfileClick }) {
     const [formData, setFormData] = useState({
         name: userName,
         phone: phone,
@@ -134,9 +134,15 @@ function DonorForm({ userName = 'User', phone = '', onBack }) {
                 <div className="header-content">
                     <button className="back-btn" onClick={onBack}>← Back</button>
                     <h1>SEVA HUB</h1>
-                    <div className="profile-top">
-                        <div className="profile-small" onClick={onProfileClick} style={{ cursor: 'pointer' }}>👤 {userName}</div>
-                        <span className="user-name-small">{userName}</span>
+                    <div className="header-actions">
+                        <button
+                            className="profile-btn"
+                            onClick={onProfileClick}
+                            title="View Profile"
+                        >
+                            <div className="profile-icon-small">👤</div>
+                            <span className="user-name-small">{userName}</span>
+                        </button>
                     </div>
                 </div>
             </header>
