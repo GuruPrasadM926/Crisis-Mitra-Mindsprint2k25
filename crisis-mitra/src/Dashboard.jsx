@@ -1,14 +1,12 @@
 import { useState } from 'react'
 import './Dashboard.css'
 
-function Dashboard({ userName = 'User', onLogout, onNeedyClick }) {
+function Dashboard({ userName = 'User', onLogout, onRoleSelect }) {
     const [selectedRole, setSelectedRole] = useState(null)
 
-    const handleNeedyClick = () => {
-        setSelectedRole('needy')
-        if (onNeedyClick) {
-            onNeedyClick()
-        }
+    const handleRoleSelect = (role) => {
+        setSelectedRole(role)
+        if (onRoleSelect) onRoleSelect(role)
     }
 
     return (
@@ -31,16 +29,16 @@ function Dashboard({ userName = 'User', onLogout, onNeedyClick }) {
                         <div className="role-container">
                             <button
                                 className={`role-button volunteer ${selectedRole === 'volunteer' ? 'active' : ''}`}
-                                onClick={() => setSelectedRole('volunteer')}
-                                title="Volunteer"
+                                onClick={() => handleRoleSelect('volunteer')}
+                                title="Volunteer/Donor"
                             >
                                 <span className="role-icon">🤝</span>
-                                <span className="role-text">Volunteer</span>
+                                <span className="role-text">Volunteer/Donor</span>
                             </button>
 
                             <button
                                 className={`role-button needy ${selectedRole === 'needy' ? 'active' : ''}`}
-                                onClick={handleNeedyClick}
+                                onClick={() => handleRoleSelect('needy')}
                                 title="Needy"
                             >
                                 <span className="role-icon">🆘</span>

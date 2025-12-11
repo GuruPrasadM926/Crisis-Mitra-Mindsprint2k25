@@ -1,0 +1,125 @@
+.volunteer-container {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+        'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+        sans-serif;
+}
+
+.volunteer-header {
+    background: transparent;
+    color: white;
+    padding: 20px 0;
+}
+
+.header-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.back-btn {
+    padding: 8px 14px;
+    background-color: rgba(255, 255, 255, 0.2);
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.volunteer-main {
+    display: flex;
+    flex: 1;
+    justify-content: center;
+    align-items: center;
+    padding: 30px;
+}
+
+.volunteer-content {
+    width: 100%;
+    max-width: 700px;
+    background: white;
+    color: #000;
+    border-radius: 10px;
+    padding: 30px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+}
+
+.volunteer-header-block h2 {
+    margin: 0 0 6px 0;
+    color: #333;
+}
+
+.slider {
+    margin-top: 20px;
+    display: flex;
+    gap: 16px;
+    overflow-x: auto;
+    padding-bottom: 10px;
+    scroll-snap-type: x mandatory;
+}
+
+.option {
+    min-width: 260px;
+    scroll-snap-align: center;
+    background: #fff;
+    border: 2px solid #e6e6e6;
+    border-radius: 12px;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.option:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+}
+
+.option.active {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: #fff;
+    border-color: transparent;
+}
+
+.option-icon {
+    font-size: 40px;
+}
+
+.option-text {
+    font-size: 18px;
+    font-weight: 700;
+    color: #000;
+}
+
+.option.active .option-text {
+    color: #fff;
+}
+
+.selection-info {
+    margin-top: 18px;
+    color: #444;
+}
+
+@media (max-width: 768px) {
+    .option {
+        min-width: 200px;
+        padding: 18px;
+    }
+
+    .option-icon {
+        font-size: 32px;
+    }
+
+    .option-text {
+        font-size: 16px;
+    }
+}
