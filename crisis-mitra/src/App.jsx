@@ -33,6 +33,7 @@ function App() {
   const [incomingAlerts, setIncomingAlerts] = useState([])
   const [upcomingAlerts, setUpcomingAlerts] = useState([])
   const [completedAlerts, setCompletedAlerts] = useState([])
+  const [currentAlertBeingAccepted, setCurrentAlertBeingAccepted] = useState(null)
 
   // Function to navigate to a new page and track history
   const navigateToPage = (page) => {
@@ -53,12 +54,31 @@ function App() {
 
   // Handle accepting a blood donation alert
   const handleAcceptAlert = (alert) => {
-    const upcomingAlert = {
-      ...alert,
-      acceptedAt: new Date().toISOString()
+    setCurrentAlertBeingAccepted(alert)
+    navigateToPage('donorForm')
+  }
+
+  // Handle donor form submission after accepting an alert
+  const handleDonorFormSubmit = (formData) => {
+    // Update user age and blood type from form
+    if (formData) {
+      setUserAge(formData.age || '')
+      setUserBloodType(formData.bloodType || '')
     }
-    setUpcomingAlerts(prev => [...prev, upcomingAlert])
-    setIncomingAlerts(prev => prev.filter(a => a.id !== alert.id))
+
+    if (currentAlertBeingAccepted) {
+      const upcomingAlert = {
+        ...currentAlertBeingAccepted,
+        acceptedAt: new Date().toISOString()
+      }
+      setUpcomingAlerts(prev => [...prev, upcomingAlert])
+      setIncomingAlerts(prev => prev.filter(a => a.id !== currentAlertBeingAccepted.id))
+      setCurrentAlertBeingAccepted(null)
+      navigateToPage('donor')
+    } else {
+      // If not accepting an alert, just redirect back to donor dashboard
+      navigateToPage('donor')
+    }
   }
 
   // Handle completing an alert (success or failure)
@@ -223,6 +243,15 @@ function App() {
     }
     if (currentPage === 'volunteer') {
       return <VolunteerDashboard userName={userName} onProfileClick={() => navigateToPage('profile')} onBack={goBack} serviceRequests={serviceRequests} />
+    }
+    if (currentPage === 'donorForm') {
+      return <DonorForm
+        userName={userName}
+        phone={userPhone}
+        onBack={goBack}
+        onProfileClick={() => navigateToPage('profile')}
+        onSubmit={handleDonorFormSubmit}
+      />
     }
     if (currentPage === 'donor') {
       return <DonorDashboard

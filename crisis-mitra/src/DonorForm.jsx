@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import './DonorForm.css'
 
-function DonorForm({ userName = 'User', phone = '', onBack, onProfileClick }) {
+function DonorForm({ userName = 'User', phone = '', onBack, onProfileClick, onSubmit }) {
     const [formData, setFormData] = useState({
         name: userName,
         phone: phone,
@@ -105,6 +105,14 @@ function DonorForm({ userName = 'User', phone = '', onBack, onProfileClick }) {
         setError('')
         setSuccess('Donor profile created successfully!')
         console.log('Donor form data:', formData)
+
+        // Call onSubmit callback if provided (for alert acceptance flow)
+        if (onSubmit) {
+            setTimeout(() => {
+                onSubmit(formData)
+            }, 1500)
+            return
+        }
 
         // Reset form
         setTimeout(() => {
