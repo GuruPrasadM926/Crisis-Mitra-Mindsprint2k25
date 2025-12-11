@@ -53,6 +53,11 @@ function App() {
   const [completedAlerts, setCompletedAlerts] = useState([])
   const [currentAlertBeingAccepted, setCurrentAlertBeingAccepted] = useState(null)
 
+  // Volunteer task tracking (similar to donor alerts)
+  const [volunteerUpcomingTasks, setVolunteerUpcomingTasks] = useState([])
+  const [volunteerCompletedTasks, setVolunteerCompletedTasks] = useState([])
+  const [currentTaskBeingAccepted, setCurrentTaskBeingAccepted] = useState(null)
+
   // Function to navigate to a new page and track history
   const navigateToPage = (page) => {
     if (page !== currentPage) {
@@ -118,6 +123,40 @@ function App() {
       }
       setCompletedAlerts(prev => [...prev, completedAlert])
       setUpcomingAlerts(prev => prev.filter(a => a.id !== alertId))
+    }
+  }
+
+  // Handle volunteer accepting a service request
+  const handleAcceptTask = (taskId) => {
+    const task = serviceRequests.find(t => t.id === taskId)
+    if (task) {
+      const upcomingTask = {
+        ...task,
+        acceptedAt: new Date().toISOString(),
+        acceptedBy: {
+          name: userName,
+          id: userId,
+          role: 'Volunteer',
+          phone: userPhone
+        }
+      }
+      setVolunteerUpcomingTasks(prev => [...prev, upcomingTask])
+      // Update the original service request with acceptedBy info
+      setServiceRequests(prev => prev.map(r => r.id === taskId ? { ...r, acceptedBy: upcomingTask.acceptedBy } : r))
+    }
+  }
+
+  // Handle volunteer completing a task
+  const handleCompleteTask = (taskId, status) => {
+    const task = volunteerUpcomingTasks.find(t => t.id === taskId)
+    if (task) {
+      const completedTask = {
+        ...task,
+        status: status === 'success' ? 'Resolved' : 'Unresolved',
+        completedAt: new Date().toISOString()
+      }
+      setVolunteerCompletedTasks(prev => [...prev, completedTask])
+      setVolunteerUpcomingTasks(prev => prev.filter(t => t.id !== taskId))
     }
   }
 
@@ -252,10 +291,12 @@ function App() {
       // Render your existing service request form here
       // For now, fallback to Needy (or replace with your form component)
       return <Needy userName={userName} onProfileClick={() => navigateToPage('profile')} onBack={goBack} onServiceRequest={(request) => {
-        // Blood and Organ requests go to Donor Dashboard (incoming alerts)
+        const requestId = Date.now()
+
+        // Blood and Organ requests go ONLY to Donor Dashboard (incoming alerts)
         if (request.service === 'Blood' || request.service === 'Organ') {
           const alert = {
-            id: Date.now(),
+            id: requestId,
             bloodType: request.bloodType,
             units: 1,
             hospital: request.place,
@@ -269,8 +310,8 @@ function App() {
           }
           setIncomingAlerts(prev => [...prev, alert])
         } else {
-          // Event Management and Social Service requests go to Volunteer Dashboard
-          const newRequest = { ...request, id: Date.now(), status: 'Pending' }
+          // Event Management and Social Service requests go ONLY to Volunteer Dashboard
+          const newRequest = { ...request, id: requestId, status: 'Pending', acceptedBy: null }
           setServiceRequests(prev => [...prev, newRequest])
         }
 
@@ -291,7 +332,17 @@ function App() {
       />
     }
     if (currentPage === 'volunteer') {
-      return <VolunteerDashboard userName={userName} onProfileClick={() => navigateToPage('profile')} onBack={goBack} serviceRequests={serviceRequests} />
+      return <VolunteerDashboard 
+        userName={userName} 
+        onProfileClick={() => navigateToPage('profile')} 
+        onBack={goBack} 
+        serviceRequests={serviceRequests}
+        incomingAlerts={serviceRequests}
+        upcomingTasks={volunteerUpcomingTasks}
+        completedTasks={volunteerCompletedTasks}
+        onAcceptTask={handleAcceptTask}
+        onCompleteTask={handleCompleteTask}
+      />
     }
     if (currentPage === 'donorForm') {
       return <DonorForm
