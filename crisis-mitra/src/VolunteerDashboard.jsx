@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import './VolunteerDashboard.css'
 
-function VolunteerDashboard({ userName = 'User', onBack, onProfileClick }) {
+function VolunteerDashboard({ userName = 'User', onBack, onProfileClick, serviceRequests = [] }) {
     const [skills, setSkills] = useState(['First Aid', 'Event Coordination'])
     const [newSkill, setNewSkill] = useState('')
 
@@ -14,7 +14,12 @@ function VolunteerDashboard({ userName = 'User', onBack, onProfileClick }) {
 
     const [alerts, setAlerts] = useState([
         { id: 1, text: 'Blood donation camp near you on 2025-12-18', details: 'Blood donation drive at Community Hospital. Time: 10 AM - 4 PM. Contact: +91-9876543210' },
-        { id: 2, text: 'Urgent volunteers needed for flood relief', details: 'Help needed for flood relief in nearby areas. Bring supplies and be prepared for outdoor work. Reporting time: 6 AM tomorrow.' }
+        { id: 2, text: 'Urgent volunteers needed for flood relief', details: 'Help needed for flood relief in nearby areas. Bring supplies and be prepared for outdoor work. Reporting time: 6 AM tomorrow.' },
+        ...serviceRequests.map(req => ({
+            id: req.id || Date.now(),
+            text: `${req.name} requesting ${req.service} service on ${req.date}`,
+            details: `Location: ${req.place}\nContact: ${req.phone} | ${req.email}\nService Type: ${req.service}${req.bloodType ? `\nBlood Type: ${req.bloodType}` : ''}${req.patientAge ? `\nPatient Age: ${req.patientAge}` : ''}`
+        }))
     ])
 
     const [expandedAlert, setExpandedAlert] = useState(null)

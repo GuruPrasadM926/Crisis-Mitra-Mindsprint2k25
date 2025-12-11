@@ -1,10 +1,10 @@
 import { useState } from 'react'
 import './Needy.css'
 
-function Needy({ userName = 'User', onBack, onProfileClick }) {
+function Needy({ userName = 'User', onBack, onProfileClick, onServiceRequest }) {
     const [formData, setFormData] = useState({
         name: userName,
-        phone: '',
+        contact: '',
         email: '',
         service: '',
         date: '',
@@ -135,13 +135,19 @@ function Needy({ userName = 'User', onBack, onProfileClick }) {
 
         setError('')
         setSuccess('Request submitted successfully!')
+        
+        // Call the callback to add service request
+        if (onServiceRequest) {
+            onServiceRequest(formData)
+        }
+        
         console.log('Needy form data:', formData)
 
         // Reset form
         setTimeout(() => {
             setFormData({
                 name: userName,
-                phone: '',
+                contact: '',
                 email: '',
                 service: '',
                 date: '',
@@ -187,38 +193,38 @@ function Needy({ userName = 'User', onBack, onProfileClick }) {
 
                     <form onSubmit={handleSubmit} className="needy-form">
                         <div className="form-group">
-                            <label htmlFor="name">Full Name</label>
+                            <label htmlFor="name">Contact Full Name</label>
                             <input
                                 type="text"
                                 id="name"
                                 name="name"
                                 value={formData.name}
                                 onChange={handleChange}
-                                placeholder="Enter your full name"
+                                placeholder="Enter the contact's full name"
                             />
                         </div>
 
                         <div className="form-group">
-                            <label htmlFor="email">Email</label>
+                            <label htmlFor="email">Contact Email</label>
                             <input
                                 type="email"
                                 id="email"
                                 name="email"
                                 value={formData.email}
                                 onChange={handleChange}
-                                placeholder="Enter your email"
+                                placeholder="Enter the email"
                             />
                         </div>
 
                         <div className="form-group">
-                            <label htmlFor="phone">Phone Number</label>
+                            <label htmlFor="phone">Contact</label>
                             <input
                                 type="tel"
                                 id="phone"
                                 name="phone"
                                 value={formData.phone}
                                 onChange={handleChange}
-                                placeholder="Enter your phone number"
+                                placeholder="Enter the contact number"
                             />
                         </div>
 

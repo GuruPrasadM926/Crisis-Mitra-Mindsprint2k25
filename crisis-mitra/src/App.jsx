@@ -24,6 +24,7 @@ function App() {
   const [userPhone, setUserPhone] = useState('')
   const [roleSelected, setRoleSelected] = useState(null)
   const [volunteerSubRole, setVolunteerSubRole] = useState(null) // volunteer or donor
+  const [serviceRequests, setServiceRequests] = useState([])
 
   if (!isLoggedIn) {
     // VolunteerOrDonor selection page (before login for volunteer role)
@@ -137,10 +138,12 @@ function App() {
       />
     }
     if (currentPage === 'needy') {
-      return <Needy userName={userName} onProfileClick={() => setCurrentPage('profile')} onBack={() => setCurrentPage('dashboard')} />
+      return <Needy userName={userName} onProfileClick={() => setCurrentPage('profile')} onBack={() => setCurrentPage('dashboard')} onServiceRequest={(request) => {
+        setServiceRequests(prev => [...prev, { ...request, id: Date.now() }])
+      }} />
     }
     if (currentPage === 'volunteer') {
-      return <VolunteerDashboard userName={userName} onProfileClick={() => setCurrentPage('profile')} onBack={() => setCurrentPage('dashboard')} />
+      return <VolunteerDashboard userName={userName} onProfileClick={() => setCurrentPage('profile')} onBack={() => setCurrentPage('dashboard')} serviceRequests={serviceRequests} />
     }
     if (currentPage === 'donor') {
       return <DonorForm userName={userName} phone={userPhone} onProfileClick={() => setCurrentPage('profile')} onBack={() => setCurrentPage('dashboard')} />
