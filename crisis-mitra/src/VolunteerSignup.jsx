@@ -3,7 +3,7 @@ import './SignupPage.css'
 import { userDB } from './TempDB'
 import { calculateAge, getMaxDOB } from './utils'
 
-function VolunteerSignup({ onSignupSuccess, onLoginClick }) {
+function VolunteerSignup({ onSignupSuccess, onLoginClick, onBack }) {
     const [formData, setFormData] = useState({ name: '', phone: '', email: '', city: '', pincode: '', dob: '', password: '', confirmPassword: '' })
     const [error, setError] = useState('')
     const [success, setSuccess] = useState('')
@@ -63,6 +63,9 @@ function VolunteerSignup({ onSignupSuccess, onLoginClick }) {
     return (
         <div className="signup-container">
             <div className="signup-box">
+                {onBack && (
+                    <button className="back-btn" onClick={onBack} style={{ marginBottom: '20px' }}>← Back</button>
+                )}
                 <h1>SEVA HUB</h1>
                 <p className="subtitle">Volunteer Sign Up</p>
 

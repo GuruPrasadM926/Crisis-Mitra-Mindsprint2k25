@@ -203,12 +203,12 @@ function App() {
       // render role-specific signup when a role was chosen
       if (roleSelected === 'volunteer') {
         if (volunteerSubRole === 'donor') {
-          return <DonorSignup onSignupSuccess={(name) => { setUserName(name || 'User'); navigateToPage('login') }} onLoginClick={() => navigateToPage('login')} />
+          return <DonorSignup onSignupSuccess={(name) => { setUserName(name || 'User'); navigateToPage('login') }} onLoginClick={() => navigateToPage('login')} onBack={() => { setVolunteerSubRole(null); setRoleSelected(null); navigateToPage('dashboard') }} />
         }
-        return <VolunteerSignup onSignupSuccess={(name) => { setUserName(name || 'User'); navigateToPage('login') }} onLoginClick={() => navigateToPage('login')} />
+        return <VolunteerSignup onSignupSuccess={(name) => { setUserName(name || 'User'); navigateToPage('login') }} onLoginClick={() => navigateToPage('login')} onBack={() => { setVolunteerSubRole(null); setRoleSelected(null); navigateToPage('dashboard') }} />
       }
       if (roleSelected === 'needy') {
-        return <NeedySignup onSignupSuccess={(name) => { setUserName(name || 'User'); navigateToPage('login') }} onLoginClick={() => navigateToPage('login')} />
+        return <NeedySignup onSignupSuccess={(name) => { setUserName(name || 'User'); navigateToPage('login') }} onLoginClick={() => navigateToPage('login')} onBack={() => { setRoleSelected(null); navigateToPage('dashboard') }} />
       }
       return <SignupPage onSignupSuccess={(name) => { setUserName(name || 'User'); navigateToPage('login') }} onLoginClick={() => navigateToPage('login')} role={roleSelected} />
     }
@@ -226,7 +226,7 @@ function App() {
             setUserBloodType(bloodType || '')
             setIsLoggedIn(true)
             navigateToPage('donor')
-          }} />
+          }} onBack={() => { setVolunteerSubRole(null); setRoleSelected(null); navigateToPage('dashboard') }} />
         }
         return <VolunteerLogin onSignupClick={() => navigateToPage('signup')} onLogin={(name, phone, id, email) => {
           setUserName(name || 'User')
@@ -235,7 +235,7 @@ function App() {
           setUserId(id)
           setIsLoggedIn(true)
           navigateToPage('volunteer')
-        }} />
+        }} onBack={() => { setVolunteerSubRole(null); setRoleSelected(null); navigateToPage('dashboard') }} />
       }
       if (roleSelected === 'needy') {
         return <NeedyLogin onSignupClick={() => navigateToPage('signup')} onLogin={(name, id) => {
@@ -243,7 +243,7 @@ function App() {
           setUserId(id)
           setIsLoggedIn(true)
           navigateToPage('needy')
-        }} />
+        }} onBack={() => { setRoleSelected(null); navigateToPage('dashboard') }} />
       }
 
       return <LoginPage onSignupClick={() => navigateToPage('signup')} onLogin={(name, id) => {

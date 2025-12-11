@@ -2,7 +2,7 @@ import { useState } from 'react'
 import './LoginPage.css'
 import { userDB } from './TempDB'
 
-function NeedyLogin({ onSignupClick, onLogin }) {
+function NeedyLogin({ onSignupClick, onLogin, onBack }) {
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
     const [error, setError] = useState('')
@@ -33,6 +33,9 @@ function NeedyLogin({ onSignupClick, onLogin }) {
     return (
         <div className="login-container">
             <div className="login-box">
+                {onBack && (
+                    <button className="back-btn" onClick={onBack} style={{ marginBottom: '20px' }}>← Back</button>
+                )}
                 <h1>SEVA HUB</h1>
                 <p className="subtitle">Needy Login</p>
 

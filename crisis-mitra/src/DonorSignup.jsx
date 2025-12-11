@@ -3,7 +3,7 @@ import './SignupPage.css'
 import { userDB } from './TempDB'
 import { calculateAge, getMaxDOB } from './utils'
 
-function DonorSignup({ onSignupSuccess, onLoginClick }) {
+function DonorSignup({ onSignupSuccess, onLoginClick, onBack }) {
     const [formData, setFormData] = useState({ name: '', phone: '', email: '', city: '', pincode: '', dob: '', bloodType: '', password: '', confirmPassword: '' })
     const [error, setError] = useState('')
     const [success, setSuccess] = useState('')
@@ -67,6 +67,9 @@ function DonorSignup({ onSignupSuccess, onLoginClick }) {
     return (
         <div className="signup-container">
             <div className="signup-box">
+                {onBack && (
+                    <button className="back-btn" onClick={onBack} style={{ marginBottom: '20px' }}>← Back</button>
+                )}
                 <h1>SEVA HUB</h1>
                 <p className="subtitle">Donor Sign Up</p>
 
