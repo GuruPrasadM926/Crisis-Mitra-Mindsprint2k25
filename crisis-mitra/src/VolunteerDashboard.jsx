@@ -107,9 +107,17 @@ function VolunteerDashboard({ userName = 'User', onBack, onProfileClick, service
                             {upcomingTasks.map(t => (
                                 <li key={t.id} className="task-item">
                                     <div className="task-content">
-                                        <strong>{t.title}</strong>
-                                        <span className="muted">{t.date}</span>
-                                        {t.description && <p className="task-description">{t.description}</p>}
+                                        <div className="task-title">{t.title}</div>
+                                        <div className="task-detail">
+                                            <span className="detail-label">Date:</span>
+                                            <span className="detail-value">{t.date}</span>
+                                        </div>
+                                        {t.description && (
+                                            <div className="task-detail">
+                                                <span className="detail-label">Details:</span>
+                                                <span className="detail-value">{t.description}</span>
+                                            </div>
+                                        )}
                                     </div>
                                     <button className="mark-complete" onClick={() => markTaskComplete(t.id)} title="Mark as complete">✓</button>
                                 </li>

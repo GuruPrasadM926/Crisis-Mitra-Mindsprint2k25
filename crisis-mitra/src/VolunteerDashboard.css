@@ -298,9 +298,9 @@
 .task-item {
     display: flex;
     justify-content: space-between;
-    align-items: center;
-    padding: 10px;
-    border-bottom: 1px dashed #eee;
+    align-items: flex-start;
+    padding: 12px;
+    border-bottom: 1px solid #e8e8e8;
     transition: background 0.2s ease;
 }
 
@@ -311,13 +311,40 @@
 .task-content {
     display: flex;
     flex-direction: column;
-    gap: 4px;
+    gap: 8px;
     flex: 1;
 }
 
-.task-content strong {
+.task-title {
     color: #000;
-    font-size: 14px;
+    font-size: 15px;
+    font-weight: 600;
+    line-height: 1.4;
+}
+
+.task-detail {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    padding-left: 8px;
+    border-left: 3px solid #667eea;
+    padding-top: 4px;
+}
+
+.detail-label {
+    color: #666;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.detail-value {
+    color: #333;
+    font-size: 13px;
+    line-height: 1.5;
+    white-space: pre-wrap;
+    word-wrap: break-word;
 }
 
 .mark-complete {
