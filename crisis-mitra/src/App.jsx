@@ -338,6 +338,9 @@ function App() {
             createdAt: new Date().toISOString()
           }
           setIncomingAlerts(prev => [...prev, alert])
+          // Also add to serviceRequests for NeedyDashboard display
+          const newRequest = { ...request, id: requestId, status: 'Pending', acceptedBy: null }
+          setServiceRequests(prev => [...prev, newRequest])
         } else {
           // Event Management and Social Service requests go ONLY to Volunteer Dashboard
           const newRequest = { ...request, id: requestId, status: 'Pending', acceptedBy: null }
