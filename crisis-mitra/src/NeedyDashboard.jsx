@@ -3,11 +3,43 @@ import './NeedyDashboard.css'
 
 function NeedyDashboard({ userName, requests = [], onNewRequest, onPullRequest, onBack }) {
     const [selectedRequest, setSelectedRequest] = useState(null)
+    const [deleteModalOpen, setDeleteModalOpen] = useState(false)
+    const [requestToDelete, setRequestToDelete] = useState(null)
+    const [deleteReason, setDeleteReason] = useState('')
+
+    const deleteReasons = [
+        'Not needed anymore',
+        'Found alternative solution',
+        'Changed plans',
+        'Issue resolved',
+        'Requesting different service',
+        'Other'
+    ]
 
     const getStatusColor = (status) => {
         if (status === 'Resolved') return 'resolved'
         if (status === 'Pending') return 'pending'
         return 'unresolved'
+    }
+
+    const handleDeleteClick = (request) => {
+        setRequestToDelete(request)
+        setDeleteModalOpen(true)
+        setDeleteReason('')
+    }
+
+    const confirmDelete = () => {
+        if (!deleteReason) {
+            alert('Please select a reason for cancellation')
+            return
+        }
+        if (onPullRequest && requestToDelete) {
+            onPullRequest(requestToDelete.id)
+            setSelectedRequest(null)
+        }
+        setDeleteModalOpen(false)
+        setRequestToDelete(null)
+        setDeleteReason('')
     }
 
     return (
@@ -84,7 +116,7 @@ function NeedyDashboard({ userName, requests = [], onNewRequest, onPullRequest, 
                     <aside className="acceptor-section">
                         {selectedRequest && selectedRequest.acceptedBy ? (
                             <div className="acceptor-card">
-                                <h2>Volunteer Information</h2>
+                                <h2>{selectedRequest.acceptedBy.role === 'Donor' ? 'Donor Information' : 'Volunteer Information'}</h2>
                                 <div className="acceptor-details">
                                     <div className="detail-group">
                                         <label>Full Name</label>
@@ -112,10 +144,13 @@ function NeedyDashboard({ userName, requests = [], onNewRequest, onPullRequest, 
                                             <div className="detail-value">{selectedRequest.acceptedBy.role}</div>
                                         </div>
                                     )}
-                                    <button className="pull-request-btn" onClick={() => {
-                                        onPullRequest(selectedRequest.id)
-                                        setSelectedRequest(null)
-                                    }}>
+                                    {selectedRequest.acceptedBy.bloodType && (
+                                        <div className="detail-group">
+                                            <label>Blood Type</label>
+                                            <div className="detail-value">{selectedRequest.acceptedBy.bloodType}</div>
+                                        </div>
+                                    )}
+                                    <button className="pull-request-btn" onClick={() => handleDeleteClick(selectedRequest)}>
                                         Cancel Request
                                     </button>
                                 </div>
@@ -126,6 +161,9 @@ function NeedyDashboard({ userName, requests = [], onNewRequest, onPullRequest, 
                                 <div className="empty-acceptor">
                                     <p>⏳ Waiting for a volunteer to accept</p>
                                     <p className="subtitle">Once someone accepts your request, their details will appear here</p>
+                                    <button className="pull-request-btn" style={{ marginTop: '20px' }} onClick={() => handleDeleteClick(selectedRequest)}>
+                                        Cancel Request
+                                    </button>
                                 </div>
                             </div>
                         ) : (
@@ -137,6 +175,43 @@ function NeedyDashboard({ userName, requests = [], onNewRequest, onPullRequest, 
                             </div>
                         )}
                     </aside>
+
+                    {/* Delete Modal */}
+                    {deleteModalOpen && (
+                        <div className="modal-overlay" onClick={() => setDeleteModalOpen(false)}>
+                            <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+                                <div className="modal-header">
+                                    <h3>Cancel Service Request</h3>
+                                    <button className="modal-close" onClick={() => setDeleteModalOpen(false)}>✕</button>
+                                </div>
+                                <div className="modal-body">
+                                    <p>Please select a reason for cancelling this request:</p>
+                                    <div className="reason-options">
+                                        {deleteReasons.map((reason) => (
+                                            <label key={reason} className="reason-option">
+                                                <input
+                                                    type="radio"
+                                                    name="deleteReason"
+                                                    value={reason}
+                                                    checked={deleteReason === reason}
+                                                    onChange={(e) => setDeleteReason(e.target.value)}
+                                                />
+                                                <span>{reason}</span>
+                                            </label>
+                                        ))}
+                                    </div>
+                                </div>
+                                <div className="modal-footer">
+                                    <button className="cancel-btn" onClick={() => setDeleteModalOpen(false)}>
+                                        Back
+                                    </button>
+                                    <button className="confirm-delete-btn" onClick={confirmDelete}>
+                                        Confirm Cancel
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    )}
                 </div>
             </main>
         </div>

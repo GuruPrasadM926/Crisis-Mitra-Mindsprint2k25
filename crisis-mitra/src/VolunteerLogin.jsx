@@ -28,7 +28,7 @@ function VolunteerLogin({ onSignupClick, onLogin }) {
 
         // Use actual stored name and phone from database
         const phone = result.user.phone || '9999999999'
-        if (onLogin) onLogin(result.user.name, phone, result.user.id)
+        if (onLogin) onLogin(result.user.name, phone, result.user.id, email)
     }
 
     return (

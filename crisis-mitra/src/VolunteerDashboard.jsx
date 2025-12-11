@@ -1,26 +1,18 @@
 import { useState } from 'react'
 import './VolunteerDashboard.css'
 
-function VolunteerDashboard({ userName = 'User', onBack, onProfileClick, serviceRequests = [] }) {
+function VolunteerDashboard({
+    userName = 'User',
+    onBack,
+    onProfileClick,
+    serviceRequests = [],
+    upcomingTasks = [],
+    completedTasks = [],
+    onAcceptTask,
+    onCompleteTask
+}) {
     const [skills, setSkills] = useState(['First Aid', 'Event Coordination'])
     const [newSkill, setNewSkill] = useState('')
-
-    const [completedTasks, setCompletedTasks] = useState([
-        { id: 1, title: 'Food distribution at shelter', date: '2025-10-12', description: 'Distributed food to 50 people at community shelter' }
-    ])
-    const [upcomingTasks, setUpcomingTasks] = useState([
-        { id: 1, title: 'Community clean-up', date: '2025-12-20', description: 'Clean up the local park and surrounding areas' }
-    ])
-
-    const [alerts, setAlerts] = useState([
-        { id: 1, text: 'Blood donation camp near you on 2025-12-18', details: 'Blood donation drive at Community Hospital. Time: 10 AM - 4 PM. Contact: +91-9876543210' },
-        { id: 2, text: 'Urgent volunteers needed for flood relief', details: 'Help needed for flood relief in nearby areas. Bring supplies and be prepared for outdoor work. Reporting time: 6 AM tomorrow.' },
-        ...serviceRequests.map(req => ({
-            id: req.id || Date.now(),
-            text: `${req.name} requesting ${req.service} service on ${req.date}`,
-            details: `Location: ${req.place}\nContact: ${req.phone} | ${req.email}\nService Type: ${req.service}${req.bloodType ? `\nBlood Type: ${req.bloodType}` : ''}${req.patientAge ? `\nPatient Age: ${req.patientAge}` : ''}`
-        }))
-    ])
 
     const [expandedAlert, setExpandedAlert] = useState(null)
 
@@ -35,36 +27,19 @@ function VolunteerDashboard({ userName = 'User', onBack, onProfileClick, service
         setSkills(prev => prev.filter((_, i) => i !== index))
     }
 
-    const acceptAlert = (alertId) => {
-        const alert = alerts.find(a => a.id === alertId)
-
-        // Add alert to upcoming tasks
-        if (alert) {
-            const newTask = {
-                id: upcomingTasks.length > 0 ? Math.max(...upcomingTasks.map(t => t.id)) + 1 : 1,
-                title: alert.text,
-                date: new Date().toISOString().split('T')[0],
-                description: alert.details
-            }
-            setUpcomingTasks(prev => [...prev, newTask])
-            // Remove alert after accepting
-            setAlerts(prev => prev.filter(a => a.id !== alertId))
-            setExpandedAlert(null)
-        }
-    }
-
-    const removeAlert = (alertId) => {
-        setAlerts(prev => prev.filter(a => a.id !== alertId))
-        setExpandedAlert(null)
-    }
-
-    const markTaskComplete = (taskId) => {
-        const task = upcomingTasks.find(t => t.id === taskId)
-        if (task) {
-            setCompletedTasks(prev => [...prev, task])
-            setUpcomingTasks(prev => prev.filter(t => t.id !== taskId))
-        }
-    }
+    // Map serviceRequests to alert format for display
+    const alerts = [
+        { id: 1, text: 'Blood donation camp near you on 2025-12-18', details: 'Blood donation drive at Community Hospital. Time: 10 AM - 4 PM. Contact: +91-9876543210' },
+        { id: 2, text: 'Urgent volunteers needed for flood relief', details: 'Help needed for flood relief in nearby areas. Bring supplies and be prepared for outdoor work. Reporting time: 6 AM tomorrow.' },
+        ...serviceRequests
+            .filter(req => !upcomingTasks.some(t => t.id === req.id)) // Only show requests not yet accepted
+            .map(req => ({
+                id: req.id,
+                text: `${req.name} requesting ${req.service} service on ${req.date}`,
+                details: `Location: ${req.place}\nContact: ${req.phone} | ${req.email}\nService Type: ${req.service}${req.bloodType ? `\nBlood Type: ${req.bloodType}` : ''}${req.patientAge ? `\nPatient Age: ${req.patientAge}` : ''}`,
+                requestId: req.id
+            }))
+    ]
 
     return (
         <div className="vdb-container">
@@ -107,10 +82,10 @@ function VolunteerDashboard({ userName = 'User', onBack, onProfileClick, service
                             {upcomingTasks.map(t => (
                                 <li key={t.id} className="task-item">
                                     <div className="task-content">
-                                        <div className="task-title">{t.title}</div>
+                                        <div className="task-title">{t.title || t.service}</div>
                                         <div className="task-detail">
                                             <span className="detail-label">Date:</span>
-                                            <span className="detail-value">{t.date}</span>
+                                            <span className="detail-value">{t.date || t.createdAt?.split('T')[0]}</span>
                                         </div>
                                         {t.description && (
                                             <div className="task-detail">
@@ -119,7 +94,13 @@ function VolunteerDashboard({ userName = 'User', onBack, onProfileClick, service
                                             </div>
                                         )}
                                     </div>
-                                    <button className="mark-complete" onClick={() => markTaskComplete(t.id)} title="Mark as complete">✓</button>
+                                    <button
+                                        className="mark-complete"
+                                        onClick={() => onCompleteTask && onCompleteTask(t.id, 'success')}
+                                        title="Mark as complete"
+                                    >
+                                        ✓
+                                    </button>
                                 </li>
                             ))}
                         </ul>
@@ -136,7 +117,25 @@ function VolunteerDashboard({ userName = 'User', onBack, onProfileClick, service
                                 <div className="details-content">
                                     <p>{expandedAlert.details}</p>
                                 </div>
-                                <button className="remove-alert" onClick={() => removeAlert(expandedAlert.id)}>Remove Alert</button>
+                                <div style={{ display: 'flex', gap: '10px' }}>
+                                    {expandedAlert.requestId && onAcceptTask ? (
+                                        <button
+                                            className="remove-alert"
+                                            onClick={() => {
+                                                onAcceptTask(expandedAlert.requestId)
+                                                setExpandedAlert(null)
+                                            }}
+                                        >
+                                            Accept Request
+                                        </button>
+                                    ) : null}
+                                    <button
+                                        className="remove-alert"
+                                        onClick={() => setExpandedAlert(null)}
+                                    >
+                                        Close
+                                    </button>
+                                </div>
                             </div>
                         ) : (
                             <>
@@ -145,7 +144,12 @@ function VolunteerDashboard({ userName = 'User', onBack, onProfileClick, service
                                     {alerts.map(a => (
                                         <li key={a.id} className="alert-item">
                                             <span className="alert-text">{a.text}</span>
-                                            <button className="accept-alert" onClick={() => acceptAlert(a.id)}>Accept</button>
+                                            <button
+                                                className="accept-alert"
+                                                onClick={() => setExpandedAlert(a)}
+                                            >
+                                                View
+                                            </button>
                                         </li>
                                     ))}
                                 </ul>
@@ -159,8 +163,8 @@ function VolunteerDashboard({ userName = 'User', onBack, onProfileClick, service
                             {completedTasks.map(t => (
                                 <li key={t.id} className="completed-task-item">
                                     <div className="task-info">
-                                        <strong>{t.title}</strong>
-                                        <span className="muted">{t.date}</span>
+                                        <strong>{t.title || t.service}</strong>
+                                        <span className="muted">{t.date || t.completedAt?.split('T')[0]}</span>
                                     </div>
                                 </li>
                             ))}

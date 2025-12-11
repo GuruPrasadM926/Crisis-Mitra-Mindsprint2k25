@@ -42,6 +42,7 @@ function App() {
   const [userId, setUserId] = useState(null)
   const [userName, setUserName] = useState('User')
   const [userPhone, setUserPhone] = useState('')
+  const [userEmail, setUserEmail] = useState('')
   const [userAge, setUserAge] = useState('')
   const [userBloodType, setUserBloodType] = useState('')
   const [roleSelected, setRoleSelected] = useState(null)
@@ -94,10 +95,24 @@ function App() {
       if (formData && isBloodTypeCompatible(formData.bloodType, currentAlertBeingAccepted.bloodType)) {
         const upcomingAlert = {
           ...currentAlertBeingAccepted,
-          acceptedAt: new Date().toISOString()
+          acceptedAt: new Date().toISOString(),
+          acceptedBy: {
+            name: userName,
+            id: userId,
+            role: 'Donor',
+            phone: userPhone,
+            email: userEmail,
+            bloodType: formData.bloodType
+          }
         }
         setUpcomingAlerts(prev => [...prev, upcomingAlert])
         setIncomingAlerts(prev => prev.filter(a => a.id !== currentAlertBeingAccepted.id))
+        // Also update the original service request with acceptedBy info
+        setServiceRequests(prev => prev.map(r =>
+          r.id === currentAlertBeingAccepted.id
+            ? { ...r, acceptedBy: upcomingAlert.acceptedBy }
+            : r
+        ))
         setCurrentAlertBeingAccepted(null)
         navigateToPage('donor')
       } else {
@@ -130,19 +145,21 @@ function App() {
   const handleAcceptTask = (taskId) => {
     const task = serviceRequests.find(t => t.id === taskId)
     if (task) {
+      const acceptedByInfo = {
+        name: userName,
+        id: userId,
+        role: 'Volunteer',
+        phone: userPhone,
+        email: userEmail
+      }
       const upcomingTask = {
         ...task,
         acceptedAt: new Date().toISOString(),
-        acceptedBy: {
-          name: userName,
-          id: userId,
-          role: 'Volunteer',
-          phone: userPhone
-        }
+        acceptedBy: acceptedByInfo
       }
       setVolunteerUpcomingTasks(prev => [...prev, upcomingTask])
-      // Update the original service request with acceptedBy info
-      setServiceRequests(prev => prev.map(r => r.id === taskId ? { ...r, acceptedBy: upcomingTask.acceptedBy } : r))
+      // Update the original service request with acceptedBy info for NeedyDashboard
+      setServiceRequests(prev => prev.map(r => r.id === taskId ? { ...r, acceptedBy: acceptedByInfo } : r))
     }
   }
 
@@ -157,6 +174,12 @@ function App() {
       }
       setVolunteerCompletedTasks(prev => [...prev, completedTask])
       setVolunteerUpcomingTasks(prev => prev.filter(t => t.id !== taskId))
+      // Update serviceRequests status as well for NeedyDashboard
+      setServiceRequests(prev => prev.map(r =>
+        r.id === taskId
+          ? { ...r, status: status === 'success' ? 'Resolved' : 'Unresolved' }
+          : r
+      ))
     }
   }
 
@@ -194,9 +217,10 @@ function App() {
       // render role-specific login when a role was chosen
       if (roleSelected === 'volunteer') {
         if (volunteerSubRole === 'donor') {
-          return <DonorLogin onSignupClick={() => navigateToPage('signup')} onLogin={(name, phone, id, age, bloodType) => {
+          return <DonorLogin onSignupClick={() => navigateToPage('signup')} onLogin={(name, phone, id, age, bloodType, email) => {
             setUserName(name || 'User')
             setUserPhone(phone || '')
+            setUserEmail(email || '')
             setUserId(id)
             setUserAge(age || '')
             setUserBloodType(bloodType || '')
@@ -204,9 +228,10 @@ function App() {
             navigateToPage('donor')
           }} />
         }
-        return <VolunteerLogin onSignupClick={() => navigateToPage('signup')} onLogin={(name, phone, id) => {
+        return <VolunteerLogin onSignupClick={() => navigateToPage('signup')} onLogin={(name, phone, id, email) => {
           setUserName(name || 'User')
           setUserPhone(phone || '')
+          setUserEmail(email || '')
           setUserId(id)
           setIsLoggedIn(true)
           navigateToPage('volunteer')
@@ -266,11 +291,15 @@ function App() {
           setUserId(null)
           setUserName('User')
           setUserPhone('')
+          setUserEmail('')
           setUserAge('')
           setUserBloodType('')
           setIncomingAlerts([])
           setUpcomingAlerts([])
           setCompletedAlerts([])
+          setVolunteerUpcomingTasks([])
+          setVolunteerCompletedTasks([])
+          setServiceRequests([])
         }}
       />
     }
@@ -332,10 +361,10 @@ function App() {
       />
     }
     if (currentPage === 'volunteer') {
-      return <VolunteerDashboard 
-        userName={userName} 
-        onProfileClick={() => navigateToPage('profile')} 
-        onBack={goBack} 
+      return <VolunteerDashboard
+        userName={userName}
+        onProfileClick={() => navigateToPage('profile')}
+        onBack={goBack}
         serviceRequests={serviceRequests}
         incomingAlerts={serviceRequests}
         upcomingTasks={volunteerUpcomingTasks}
@@ -379,11 +408,15 @@ function App() {
         setUserId(null)
         setUserName('User')
         setUserPhone('')
+        setUserEmail('')
         setUserAge('')
         setUserBloodType('')
         setIncomingAlerts([])
         setUpcomingAlerts([])
         setCompletedAlerts([])
+        setVolunteerUpcomingTasks([])
+        setVolunteerCompletedTasks([])
+        setServiceRequests([])
       }}
       onRoleSelect={(role) => {
         if (role === 'needy') navigateToPage('needy')

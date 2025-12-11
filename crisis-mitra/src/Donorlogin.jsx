@@ -30,7 +30,7 @@ function DonorLogin({ onSignupClick, onLogin }) {
         const phone = result.user.phone || '9999999999'
         const age = result.user.donorInfo?.age || ''
         const bloodType = result.user.donorInfo?.bloodType || ''
-        if (onLogin) onLogin(result.user.name, phone, result.user.id, age, bloodType)
+        if (onLogin) onLogin(result.user.name, phone, result.user.id, age, bloodType, email)
     }
 
     return (
