@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import './LoginPage.css'
 
-function LoginPage({ onSignupClick, onLogin }) {
+function VolunteerLogin({ onSignupClick, onLogin }) {
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
     const [age, setAge] = useState('')
@@ -21,21 +21,15 @@ function LoginPage({ onSignupClick, onLogin }) {
         }
 
         setError('')
-        // Handle login logic here
-        console.log('Login attempt with:', { email, password, age })
-
-        // Extract name from email for display
         const nameFromEmail = email.split('@')[0]
-        if (onLogin) {
-            onLogin(nameFromEmail)
-        }
+        if (onLogin) onLogin(nameFromEmail)
     }
 
     return (
         <div className="login-container">
             <div className="login-box">
                 <h1>SEVA HUB</h1>
-                <p className="subtitle">One Hub For Every Seva</p>
+                <p className="subtitle">Volunteer Login</p>
 
                 <form onSubmit={handleSubmit}>
                     <div className="form-group">
@@ -74,17 +68,12 @@ function LoginPage({ onSignupClick, onLogin }) {
 
                     {error && <div className="error-message">{error}</div>}
 
-                    <button type="submit" className="login-btn">
-                        Login
-                    </button>
+                    <button type="submit" className="login-btn">Login</button>
                 </form>
 
                 <div className="login-footer">
                     <p>
-                        Don't have an account? <a onClick={onSignupClick} style={{ cursor: 'pointer' }}>Sign up</a>
-                    </p>
-                    <p>
-                        <a href="#forgot-password">Forgot password?</a>
+                        Don't have an account? <a onClick={onSignupClick} style={{ cursor: 'pointer' }}>Sign up as Volunteer</a>
                     </p>
                 </div>
             </div>
@@ -92,4 +81,4 @@ function LoginPage({ onSignupClick, onLogin }) {
     )
 }
 
-export default LoginPage
+export default VolunteerLogin

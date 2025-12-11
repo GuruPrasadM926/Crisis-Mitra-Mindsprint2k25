@@ -8,12 +8,21 @@ function Needy({ userName = 'User', onBack }) {
         email: '',
         service: '',
         date: '',
-        place: ''
+        place: '',
+        bloodType: '',
+        organType: '',
+        eventType: '',
+        serviceType: '',
+        patientAge: ''
     })
     const [error, setError] = useState('')
     const [success, setSuccess] = useState('')
 
     const serviceOptions = ['Blood', 'Organ', 'Event Management', 'Social Service']
+    const bloodTypes = ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-']
+    const organTypes = ['Kidney', 'Liver', 'Heart', 'Lung', 'Pancreas', 'Cornea', 'Other']
+    const eventTypes = ['Wedding', 'Birthday', 'Conference', 'Festival', 'Charity Event', 'Other']
+    const socialServiceTypes = ['Food Distribution', 'Medical Camp', 'Education Support', 'Clothing Drive', 'Shelter', 'Other']
 
     // Get today's date
     const today = new Date()
@@ -37,6 +46,47 @@ function Needy({ userName = 'User', onBack }) {
             return
         }
 
+        // Conditional field validation based on service type
+        if (formData.service === 'Blood' && !formData.bloodType) {
+            setError('Please select blood type')
+            setSuccess('')
+            return
+        }
+        if (formData.service === 'Organ' && (!formData.organType || !formData.bloodType)) {
+            setError('Please select organ type and blood type')
+            setSuccess('')
+            return
+        }
+        if (formData.service === 'Organ' && !formData.patientAge) {
+            setError('Please enter patient age')
+            setSuccess('')
+            return
+        }
+        if (formData.service === 'Event Management' && !formData.eventType) {
+            setError('Please select event type')
+            setSuccess('')
+            return
+        }
+        if (formData.service === 'Social Service' && !formData.serviceType) {
+            setError('Please select service type')
+            setSuccess('')
+            return
+        }
+
+        // Patient age validation for Blood service (if provided)
+        if (formData.service === 'Blood' && formData.patientAge && parseInt(formData.patientAge) <= 0) {
+            setError('Patient age must be greater than 0')
+            setSuccess('')
+            return
+        }
+
+        // Patient age validation for Organ service
+        if (formData.service === 'Organ' && parseInt(formData.patientAge) <= 0) {
+            setError('Patient age must be greater than 0')
+            setSuccess('')
+            return
+        }
+
         // Email validation
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
         if (!emailRegex.test(formData.email)) {
@@ -55,6 +105,7 @@ function Needy({ userName = 'User', onBack }) {
 
         // Date validation
         const selectedDate = new Date(formData.date)
+        const today = new Date()
         const todayDate = new Date(today.getFullYear(), today.getMonth(), today.getDate())
         if (selectedDate < todayDate) {
             setError('Please select a future date')
@@ -74,7 +125,12 @@ function Needy({ userName = 'User', onBack }) {
                 email: '',
                 service: '',
                 date: '',
-                place: ''
+                place: '',
+                bloodType: '',
+                organType: '',
+                eventType: '',
+                serviceType: '',
+                patientAge: ''
             })
             setSuccess('')
         }, 2000)
@@ -151,6 +207,117 @@ function Needy({ userName = 'User', onBack }) {
                                 ))}
                             </select>
                         </div>
+
+                        {/* Conditional fields based on service type */}
+                        {formData.service === 'Blood' && (
+                            <>
+                                <div className="form-group">
+                                    <label htmlFor="bloodType">Blood Type</label>
+                                    <select
+                                        id="bloodType"
+                                        name="bloodType"
+                                        value={formData.bloodType}
+                                        onChange={handleChange}
+                                    >
+                                        <option value="">Select blood type</option>
+                                        {bloodTypes.map(type => (
+                                            <option key={type} value={type}>{type}</option>
+                                        ))}
+                                    </select>
+                                </div>
+                                <div className="form-group">
+                                    <label htmlFor="patientAge">Patient Age (Optional)</label>
+                                    <input
+                                        type="number"
+                                        id="patientAge"
+                                        name="patientAge"
+                                        value={formData.patientAge}
+                                        onChange={handleChange}
+                                        placeholder="Enter patient age"
+                                        min="0"
+                                    />
+                                </div>
+                            </>
+                        )}
+
+                        {formData.service === 'Organ' && (
+                            <>
+                                <div className="form-group">
+                                    <label htmlFor="organType">Organ Type</label>
+                                    <select
+                                        id="organType"
+                                        name="organType"
+                                        value={formData.organType}
+                                        onChange={handleChange}
+                                    >
+                                        <option value="">Select organ type</option>
+                                        {organTypes.map(type => (
+                                            <option key={type} value={type}>{type}</option>
+                                        ))}
+                                    </select>
+                                </div>
+                                <div className="form-group">
+                                    <label htmlFor="bloodType">Blood Type</label>
+                                    <select
+                                        id="bloodType"
+                                        name="bloodType"
+                                        value={formData.bloodType}
+                                        onChange={handleChange}
+                                    >
+                                        <option value="">Select blood type</option>
+                                        {bloodTypes.map(type => (
+                                            <option key={type} value={type}>{type}</option>
+                                        ))}
+                                    </select>
+                                </div>
+                                <div className="form-group">
+                                    <label htmlFor="patientAge">Patient Age</label>
+                                    <input
+                                        type="number"
+                                        id="patientAge"
+                                        name="patientAge"
+                                        value={formData.patientAge}
+                                        onChange={handleChange}
+                                        placeholder="Enter patient age"
+                                        min="0"
+                                    />
+                                </div>
+                            </>
+                        )}
+
+                        {formData.service === 'Event Management' && (
+                            <div className="form-group">
+                                <label htmlFor="eventType">Event Type</label>
+                                <select
+                                    id="eventType"
+                                    name="eventType"
+                                    value={formData.eventType}
+                                    onChange={handleChange}
+                                >
+                                    <option value="">Select event type</option>
+                                    {eventTypes.map(type => (
+                                        <option key={type} value={type}>{type}</option>
+                                    ))}
+                                </select>
+                            </div>
+                        )}
+
+                        {formData.service === 'Social Service' && (
+                            <div className="form-group">
+                                <label htmlFor="serviceType">Service Type</label>
+                                <select
+                                    id="serviceType"
+                                    name="serviceType"
+                                    value={formData.serviceType}
+                                    onChange={handleChange}
+                                >
+                                    <option value="">Select service type</option>
+                                    {socialServiceTypes.map(type => (
+                                        <option key={type} value={type}>{type}</option>
+                                    ))}
+                                </select>
+                            </div>
+                        )}
 
                         <div className="form-group">
                             <label htmlFor="date">Date of Service</label>

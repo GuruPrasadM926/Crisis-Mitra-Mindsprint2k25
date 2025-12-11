@@ -2,6 +2,10 @@ import { useState } from 'react'
 import './App.css'
 import LoginPage from './LoginPage'
 import SignupPage from './SignupPage'
+import VolunteerLogin from './VolunteerLogin'
+import VolunteerSignup from './VolunteerSignup'
+import NeedyLogin from './NeedyLogin'
+import NeedySignup from './NeedySignup'
 import Dashboard from './Dashboard'
 import Needy from './Needy'
 import Volunteer from './Volunteer'
@@ -15,17 +19,36 @@ function App() {
 
   if (!isLoggedIn) {
     if (currentPage === 'signup') {
-      return <SignupPage onSignupSuccess={(name) => {
-        setUserName(name || 'User')
-        setCurrentPage('login')
-      }} onLoginClick={() => setCurrentPage('login')} role={roleSelected} />
+      // render role-specific signup when a role was chosen
+      if (roleSelected === 'volunteer') {
+        return <VolunteerSignup onSignupSuccess={(name) => { setUserName(name || 'User'); setCurrentPage('login') }} onLoginClick={() => setCurrentPage('login')} />
+      }
+      if (roleSelected === 'needy') {
+        return <NeedySignup onSignupSuccess={(name) => { setUserName(name || 'User'); setCurrentPage('login') }} onLoginClick={() => setCurrentPage('login')} />
+      }
+      return <SignupPage onSignupSuccess={(name) => { setUserName(name || 'User'); setCurrentPage('login') }} onLoginClick={() => setCurrentPage('login')} role={roleSelected} />
     }
 
     if (currentPage === 'login') {
+      // render role-specific login when a role was chosen
+      if (roleSelected === 'volunteer') {
+        return <VolunteerLogin onSignupClick={() => setCurrentPage('signup')} onLogin={(name) => {
+          setUserName(name || 'User')
+          setIsLoggedIn(true)
+          setCurrentPage('volunteer')
+        }} />
+      }
+      if (roleSelected === 'needy') {
+        return <NeedyLogin onSignupClick={() => setCurrentPage('signup')} onLogin={(name) => {
+          setUserName(name || 'User')
+          setIsLoggedIn(true)
+          setCurrentPage('needy')
+        }} />
+      }
+
       return <LoginPage onSignupClick={() => setCurrentPage('signup')} onLogin={(name) => {
         setUserName(name || 'User')
         setIsLoggedIn(true)
-        // Redirect to Needy or Volunteer form if the user selected that role before auth
         setCurrentPage(roleSelected === 'needy' ? 'needy' : roleSelected === 'volunteer' ? 'volunteer' : 'dashboard')
       }} role={roleSelected} />
     }
