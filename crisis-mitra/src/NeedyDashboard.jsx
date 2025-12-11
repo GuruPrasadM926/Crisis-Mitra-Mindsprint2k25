@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import './NeedyDashboard.css'
 
-function NeedyDashboard({ userName, requests = [], onNewRequest, onPullRequest }) {
+function NeedyDashboard({ userName, requests = [], onNewRequest, onPullRequest, onBack }) {
     const [selectedRequest, setSelectedRequest] = useState(null)
 
     const getStatusColor = (status) => {
@@ -14,8 +14,11 @@ function NeedyDashboard({ userName, requests = [], onNewRequest, onPullRequest }
         <div className="needy-dashboard-container">
             <header className="needy-dashboard-header">
                 <div className="header-content">
-                    <h1>Needy Dashboard</h1>
-                    <p className="greeting">Welcome, <strong>{userName}</strong></p>
+                    <button className="back-btn" onClick={onBack} title="Go back">← Back</button>
+                    <div className="header-title">
+                        <h1>Needy Dashboard</h1>
+                        <p className="greeting">Welcome, <strong>{userName}</strong></p>
+                    </div>
                 </div>
             </header>
 

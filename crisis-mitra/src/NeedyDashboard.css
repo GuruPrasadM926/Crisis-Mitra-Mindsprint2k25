@@ -1,5 +1,6 @@
 .needy-dashboard-container {
-    min-height: 100vh;
+    min-height: 800px;
+    min-width: 700px;
     display: flex;
     flex-direction: column;
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -13,8 +14,34 @@
 }
 
 .header-content {
-    max-width: 1200px;
+    max-width: 700px;
     margin: 0 auto;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.back-btn {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+
+.back-btn:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: translateX(-2px);
+}
+
+.header-title {
+    justify-content: center;
+    flex: 1;
 }
 
 .needy-dashboard-header h1 {
@@ -31,7 +58,7 @@
 
 .needy-dashboard-main {
     flex: 1;
-    max-width: 1200px;
+    max-width: 700px;
     width: 100%;
     margin: 0 auto;
     padding: 30px 20px;
