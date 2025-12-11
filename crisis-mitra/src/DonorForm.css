@@ -42,6 +42,29 @@
     background: rgba(255, 255, 255, 0.2);
 }
 
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.profile-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    color: white;
+    padding: 8px 15px;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.profile-btn:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+
 .profile-top {
     display: flex;
     align-items: center;

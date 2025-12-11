@@ -37,7 +37,7 @@ function VolunteerDashboard({ userName = 'User', onBack, onProfileClick, service
 
     const acceptAlert = (alertId) => {
         const alert = alerts.find(a => a.id === alertId)
-        
+
         // Add alert to upcoming tasks
         if (alert) {
             const newTask = {
@@ -72,7 +72,13 @@ function VolunteerDashboard({ userName = 'User', onBack, onProfileClick, service
                 <div className="header-inner">
                     <button className="back-btn" onClick={onBack}>← Back</button>
                     <div className="vdb-title">SEVA HUB</div>
-                    <div className="profile-small" onClick={onProfileClick} style={{cursor: 'pointer'}}>👤 {userName}</div>
+                    <button
+                        className="profile-btn"
+                        onClick={onProfileClick}
+                        title="View Profile"
+                    >
+                        <span className="profile-small">👤 {userName}</span>
+                    </button>
                 </div>
             </header>
 
