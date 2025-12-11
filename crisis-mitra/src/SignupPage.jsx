@@ -93,6 +93,7 @@ function SignupPage({ onSignupSuccess, onLoginClick }) {
             city: formData.city,
             pincode: formData.pincode,
             dob: formData.dob,
+            age: age,
             role: 'general'
         })
 

@@ -49,8 +49,9 @@ function DonorForm({ userName = 'User', phone = '', onBack, onProfileClick }) {
         e.preventDefault()
 
         // Validation
-        if (!formData.name || !formData.phone || !formData.age || !formData.bloodType || !formData.guardianName || !formData.guardianRelationship || !formData.guardianPhone) {
-            setError('Please fill in all required fields')
+        if (!formData.name || !formData.phone || !formData.age || !formData.bloodType || !formData.guardianName || !formData.guardianRelationship || !formData.guardianPhone ||
+            formData.chronicDiseases === '' || formData.recentIllness === '' || formData.vaccines === '' || formData.alcoholDrugs === '') {
+            setError('Please fill in all required fields and answer all Yes/No questions')
             setSuccess('')
             return
         }
@@ -220,93 +221,89 @@ function DonorForm({ userName = 'User', phone = '', onBack, onProfileClick }) {
 
                             <div className="form-group radio-group">
                                 <label>Do you have any chronic diseases?</label>
-                                <div>
-                                    <label>
+                                <div style={{ display: 'flex', gap: '1em', alignItems: 'center' }}>
+                                    <label style={{ display: 'flex', alignItems: 'center', gap: '0.3em' }}>
                                         <input
                                             type="radio"
                                             name="chronicDiseases"
                                             value="yes"
                                             checked={formData.chronicDiseases === 'yes'}
                                             onChange={handleChange}
-                                        /> Yes
+                                        />
+                                        Yes
                                     </label>
-                                    <label style={{ marginLeft: '1em' }}>
+                                    <label style={{ display: 'flex', alignItems: 'center', gap: '0.3em' }}>
                                         <input
                                             type="radio"
                                             name="chronicDiseases"
                                             value="no"
                                             checked={formData.chronicDiseases === 'no'}
                                             onChange={handleChange}
-                                        /> No
+                                        />
+                                        No
                                     </label>
                                 </div>
                             </div>
 
                             {formData.chronicDiseases === 'yes' && (
-                                <div className="checkbox-list tickbox-list">
+                                <div className="checkbox-list">
                                     <p className="checkbox-label">Select all that apply:</p>
-                                    <div className="tickbox-grid">
-                                        {chronicDiseaseOptions.map(disease => (
-                                            <label key={disease} className="tickbox-item">
-                                                <input
-                                                    type="checkbox"
-                                                    id={`disease-${disease}`}
-                                                    value={disease}
-                                                    checked={formData.chronicDiseasesList.includes(disease)}
-                                                    onChange={(e) => handleCheckboxListChange(e, 'chronicDiseasesList')}
-                                                    className="tickbox-input"
-                                                />
-                                                <span className="tickbox-custom"></span>
-                                                <span className="tickbox-label-text">{disease}</span>
-                                            </label>
-                                        ))}
-                                    </div>
+                                    {chronicDiseaseOptions.map(disease => (
+                                        <div key={disease} className="checkbox-item">
+                                            <input
+                                                type="checkbox"
+                                                id={`disease-${disease}`}
+                                                value={disease}
+                                                checked={formData.chronicDiseasesList.includes(disease)}
+                                                onChange={(e) => handleCheckboxListChange(e, 'chronicDiseasesList')}
+                                            />
+                                            <label htmlFor={`disease-${disease}`}>{disease}</label>
+                                        </div>
+                                    ))}
                                 </div>
                             )}
 
                             <div className="form-group radio-group">
                                 <label>Have you had any recent illness?</label>
-                                <div>
-                                    <label>
+                                <div style={{ display: 'flex', gap: '1em', alignItems: 'center' }}>
+                                    <label style={{ display: 'flex', alignItems: 'center', gap: '0.3em' }}>
                                         <input
                                             type="radio"
                                             name="recentIllness"
                                             value="yes"
                                             checked={formData.recentIllness === 'yes'}
                                             onChange={handleChange}
-                                        /> Yes
+                                        />
+                                        Yes
                                     </label>
-                                    <label style={{ marginLeft: '1em' }}>
+                                    <label style={{ display: 'flex', alignItems: 'center', gap: '0.3em' }}>
                                         <input
                                             type="radio"
                                             name="recentIllness"
                                             value="no"
                                             checked={formData.recentIllness === 'no'}
                                             onChange={handleChange}
-                                        /> No
+                                        />
+                                        No
                                     </label>
                                 </div>
                             </div>
 
                             {formData.recentIllness === 'yes' && (
-                                <div className="checkbox-list tickbox-list">
+                                <div className="checkbox-list">
                                     <p className="checkbox-label">Select all that apply:</p>
-                                    <div className="tickbox-grid">
-                                        {recentIllnessOptions.map(illness => (
-                                            <label key={illness} className="tickbox-item">
-                                                <input
-                                                    type="checkbox"
-                                                    id={`illness-${illness}`}
-                                                    value={illness}
-                                                    checked={formData.recentIllnessList.includes(illness)}
-                                                    onChange={(e) => handleCheckboxListChange(e, 'recentIllnessList')}
-                                                    className="tickbox-input"
-                                                />
-                                                <span className="tickbox-custom"></span>
-                                                <span className="tickbox-label-text">{illness}</span>
-                                            </label>
-                                        ))}
-                                    </div>
+                                    {recentIllnessOptions.map(illness => (
+                                        <div key={illness} className="checkbox-item">
+                                            <input
+                                                type="checkbox"
+                                                id={`illness-${illness}`}
+                                                value={illness}
+                                                checked={formData.recentIllnessList.includes(illness)}
+                                                onChange={(e) => handleCheckboxListChange(e, 'recentIllnessList')}
+                                            />
+                                            <label htmlFor={`illness-${illness}`}>{illness}</label>
+                                        </div>
+                                    ))}
                                 </div>
                             )}
                         </div>
@@ -317,24 +314,26 @@ function DonorForm({ userName = 'User', phone = '', onBack, onProfileClick }) {
 
                             <div className="form-group radio-group">
                                 <label>Have you taken any vaccines recently?</label>
-                                <div>
-                                    <label>
+                                <div style={{ display: 'flex', gap: '1em', alignItems: 'center' }}>
+                                    <label style={{ display: 'flex', alignItems: 'center', gap: '0.3em' }}>
                                         <input
                                             type="radio"
                                             name="vaccines"
                                             value="yes"
                                             checked={formData.vaccines === 'yes'}
                                             onChange={handleChange}
-                                        /> Yes
+                                        />
+                                        Yes
                                     </label>
-                                    <label style={{ marginLeft: '1em' }}>
+                                    <label style={{ display: 'flex', alignItems: 'center', gap: '0.3em' }}>
                                         <input
                                             type="radio"
                                             name="vaccines"
                                             value="no"
                                             checked={formData.vaccines === 'no'}
                                             onChange={handleChange}
-                                        /> No
+                                        />
+                                        No
                                     </label>
                                 </div>
                             </div>
@@ -357,24 +356,26 @@ function DonorForm({ userName = 'User', phone = '', onBack, onProfileClick }) {
 
                             <div className="form-group radio-group">
                                 <label>Have you consumed alcohol, drugs, or tobacco recently?</label>
-                                <div>
-                                    <label>
+                                <div style={{ display: 'flex', gap: '1em', alignItems: 'center' }}>
+                                    <label style={{ display: 'flex', alignItems: 'center', gap: '0.3em' }}>
                                         <input
                                             type="radio"
                                             name="alcoholDrugs"
                                             value="yes"
                                             checked={formData.alcoholDrugs === 'yes'}
                                             onChange={handleChange}
-                                        /> Yes
+                                        />
+                                        Yes
                                     </label>
-                                    <label style={{ marginLeft: '1em' }}>
+                                    <label style={{ display: 'flex', alignItems: 'center', gap: '0.3em' }}>
                                         <input
                                             type="radio"
                                             name="alcoholDrugs"
                                             value="no"
                                             checked={formData.alcoholDrugs === 'no'}
                                             onChange={handleChange}
-                                        /> No
+                                        />
+                                        No
                                     </label>
                                 </div>
                             </div>

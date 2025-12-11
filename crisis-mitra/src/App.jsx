@@ -121,6 +121,8 @@ function App() {
           setRoleSelected(null)
           setVolunteerSubRole(null)
           setUserId(null)
+          setUserName('User')
+          setUserPhone('')
         }}
       />
     }
@@ -157,6 +159,8 @@ function App() {
         setRoleSelected(null)
         setVolunteerSubRole(null)
         setUserId(null)
+        setUserName('User')
+        setUserPhone('')
       }}
       onRoleSelect={(role) => {
         if (role === 'needy') setCurrentPage('needy')

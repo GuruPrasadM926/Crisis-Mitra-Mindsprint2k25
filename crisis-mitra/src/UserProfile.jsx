@@ -97,7 +97,9 @@ function UserProfile({ userId, userName, onBack, onLogout }) {
             <div className="profile-header">
                 <button className="back-btn" onClick={onBack}>← Back</button>
                 <h1>My Profile</h1>
-                <button className="logout-btn" onClick={onLogout}>Logout</button>
+                {userId && userName && (
+                    <button className="logout-btn" onClick={onLogout}>Logout</button>
+                )}
             </div>
 
             <div className="profile-card">

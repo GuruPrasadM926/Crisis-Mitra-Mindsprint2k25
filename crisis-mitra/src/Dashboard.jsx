@@ -23,7 +23,9 @@ function Dashboard({ userName = 'User', onLogout, onRoleSelect, onProfileClick }
                             <div className="profile-icon-small">👤</div>
                             <span className="user-name-small">{userName}</span>
                         </button>
-                        <button className="logout-btn" onClick={onLogout}>Logout</button>
+                        {(userName && userName !== '' && userName !== 'User') && (
+                            <button className="logout-btn" onClick={onLogout}>Logout</button>
+                        )}
                     </div>
                 </div>
             </header>
