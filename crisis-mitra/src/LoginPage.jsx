@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import './LoginPage.css'
 
-function LoginPage({ onSignupClick }) {
+function LoginPage({ onSignupClick, onLogin }) {
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
     const [error, setError] = useState('')
@@ -17,6 +17,12 @@ function LoginPage({ onSignupClick }) {
         setError('')
         // Handle login logic here
         console.log('Login attempt with:', { email, password })
+
+        // Extract name from email for display
+        const nameFromEmail = email.split('@')[0]
+        if (onLogin) {
+            onLogin(nameFromEmail)
+        }
     }
 
     return (

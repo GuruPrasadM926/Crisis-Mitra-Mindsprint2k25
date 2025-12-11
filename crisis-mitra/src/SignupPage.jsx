@@ -88,7 +88,7 @@ function SignupPage({ onSignupSuccess, onLoginClick }) {
         // Call callback after 2 seconds
         setTimeout(() => {
             if (onSignupSuccess) {
-                onSignupSuccess()
+                onSignupSuccess(formData.name)
             }
         }, 2000)
     }
