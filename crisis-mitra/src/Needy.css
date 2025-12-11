@@ -1,0 +1,220 @@
+.needy-container {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+        'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+        sans-serif;
+}
+
+.needy-header {
+    background: transparent;
+    color: white;
+    padding: 20px 0;
+}
+
+.header-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    gap: 20px;
+}
+
+.back-btn {
+    padding: 8px 16px;
+    background-color: rgba(255, 255, 255, 0.2);
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.back-btn:hover {
+    background-color: rgba(255, 255, 255, 0.3);
+    border-color: rgba(255, 255, 255, 0.5);
+}
+
+.needy-header h1 {
+    margin: 0;
+    font-size: 28px;
+    font-weight: 700;
+    flex: 1;
+    text-align: center;
+}
+
+.profile-top {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.profile-icon-small {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+}
+
+.user-name-small {
+    font-size: 16px;
+    font-weight: 500;
+    color: white;
+}
+
+.needy-main {
+    display: flex;
+    flex: 1;
+    justify-content: center;
+    width: 100%;
+    padding: 30px;
+    overflow-y: auto;
+}
+
+.needy-content {
+    width: 100%;
+    max-width: 600px;
+    background: white;
+    border-radius: 10px;
+    padding: 40px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+}
+
+.form-header {
+    margin-bottom: 30px;
+    text-align: center;
+}
+
+.form-header h2 {
+    margin: 0 0 10px 0;
+    color: #333;
+    font-size: 24px;
+    font-weight: 600;
+}
+
+.form-header p {
+    margin: 0;
+    color: #777;
+    font-size: 14px;
+}
+
+.needy-form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.form-group label {
+    color: #333;
+    font-weight: 500;
+    font-size: 14px;
+}
+
+.form-group input,
+.form-group select {
+    padding: 12px;
+    border: 2px solid #e0e0e0;
+    border-radius: 5px;
+    font-size: 14px;
+    transition: border-color 0.3s ease;
+    font-family: inherit;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+    outline: none;
+    border-color: #667eea;
+}
+
+.form-group select {
+    cursor: pointer;
+    background-color: white;
+    color: #000;
+}
+
+.error-message {
+    background-color: #fee;
+    color: #c33;
+    padding: 12px;
+    border-radius: 5px;
+    font-size: 14px;
+    border-left: 4px solid #c33;
+}
+
+.success-message {
+    background-color: #efe;
+    color: #3c3;
+    padding: 12px;
+    border-radius: 5px;
+    font-size: 14px;
+    border-left: 4px solid #3c3;
+}
+
+.submit-btn {
+    padding: 12px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-top: 10px;
+}
+
+.submit-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+}
+
+.submit-btn:active {
+    transform: translateY(0);
+}
+
+@media (max-width: 768px) {
+    .header-content {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .needy-header h1 {
+        font-size: 24px;
+    }
+
+    .needy-content {
+        padding: 30px 20px;
+        margin: 0 10px;
+    }
+
+    .back-btn {
+        font-size: 12px;
+    }
+
+    .user-name-small {
+        font-size: 14px;
+    }
+
+    .profile-icon-small {
+        width: 35px;
+        height: 35px;
+        font-size: 20px;
+    }
+}
