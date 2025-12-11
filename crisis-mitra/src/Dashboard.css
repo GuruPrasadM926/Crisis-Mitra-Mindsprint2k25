@@ -136,6 +136,7 @@
 .role-text {
     font-weight: 600;
     font-size: 15px;
+    color: #000;
 }
 
 .role-button.active .role-text {
