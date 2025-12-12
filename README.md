@@ -1,4 +1,4 @@
-# Crisis-Mitra
+# Seva-Hub
 
 React + Vite web application for connecting donors, volunteers and people in need.
 
@@ -7,14 +7,14 @@ This repository contains a frontend built with React and Vite. The app supports 
 - Volunteers — add skills and help
 - Needy — request and track help
 
-The UI uses a small local storage based mock database (see `src/TempDB.js`) so you can run the app entirely on the frontend during development.
+The UI uses a small local storage based mock database (see `src/TempDB.js`) so you can run the app entirely on the frontend during development. Further integration to a database is acheived through Firebase.
 
 ## Tech stack
 - React 19
 - Vite
 - CSS modules
 - Local storage (temporary mock database)
-- Optional libraries included: Express, Mongoose and MongoDB packages (no server scaffolding included)
+- Optional libraries included: React, Vite, Node.js, Firebase packages (no server scaffolding included)
 
 ## Features
 - Authentication (signup/login) with mock data persisted to localStorage
@@ -79,12 +79,11 @@ This project includes `express`, `mongodb`, and `mongoose` in the dependencies, 
 - Create a server directory (e.g., `api/` or `server/`) and implement REST endpoints using Express.
 - Connect to MongoDB using Mongoose (or use the included TempDB for quick local testing).
 
-## Contributing
+## Contributingh
+
 - Fork the repo or create a feature branch from `main`.
 - Add tests if needed, create a PR, and describe the change.
 
 ## License
 This project does not include a license file. Add a LICENSE if you plan to open-source it.
 
----
-If you'd like, I can also add a short CONTRIBUTING.md, a detailed architecture doc, or a server scaffold for the backend. What would you like next?
