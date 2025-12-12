@@ -1,5 +1,6 @@
 .vod-container {
-    min-height: 100vh;
+    min-height: 800px;
+    min-width: 700px;
     display: flex;
     flex-direction: column;
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -12,7 +13,7 @@
 }
 
 .vod-header .header-content {
-    max-width: 1200px;
+    max-width: 700px;
     margin: 0 auto;
     padding: 0 20px;
     display: flex;
@@ -54,30 +55,31 @@
 }
 
 .vod-content {
-    background: #fff;
+    background: radial-gradient(rgb(136, 176, 223), rgb(173, 184, 202));
     border-radius: 12px;
     padding: 40px;
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-    max-width: 700px;
+    max-width: 600px;
     width: 100%;
-    color: #000;
+    color: #ffffff;
 }
 
 .form-header {
     text-align: center;
     margin-bottom: 40px;
+    color: #e6e6e6;
 }
 
 .form-header h2 {
     font-size: 28px;
     font-weight: 700;
     margin: 0 0 8px 0;
-    color: #000;
+    color: #fefefe;
 }
 
 .form-header p {
     font-size: 16px;
-    color: #666;
+    color: #f6f5f5;
     margin: 0;
 }
 

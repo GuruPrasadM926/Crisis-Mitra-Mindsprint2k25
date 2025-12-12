@@ -1,12 +1,13 @@
 .donor-dashboard-container {
-    min-height: 100vh;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 800px;
+    min-width: 800px;
+    background: linear-gradient(135deg, #818fbc 0%, #01c4ff 100%);
     padding: 20px;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 .donor-dashboard-header {
-    background: white;
+    background: transparent;
     border-radius: 12px;
     padding: 20px;
     margin-bottom: 30px;
@@ -20,14 +21,7 @@
     margin-bottom: 20px;
     flex-wrap: wrap;
     gap: 10px;
-}
-
-.header-top h1 {
-    flex: 1;
-    text-align: center;
-    color: #333;
-    margin: 0;
-    font-size: 28px;
+    color: white;
 }
 
 .back-btn,
@@ -36,7 +30,7 @@
     border: none;
     border-radius: 8px;
     background: #667eea;
-    color: white;
+    color: rgb(5, 5, 5);
     cursor: pointer;
     font-weight: 600;
     font-size: 14px;
@@ -49,6 +43,15 @@
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
 }
+
+.header-top h1 {
+    flex: 1;
+    text-align: center;
+    color: #333;
+    margin: 0;
+    font-size: 28px;
+}
+
 
 .donor-info-card {
     display: flex;
@@ -96,7 +99,7 @@
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
     gap: 20px;
-    max-width: 1400px;
+    max-width: 700px;
     margin: 0 auto;
 }
 
@@ -357,7 +360,7 @@
     transform: translateY(-1px);
 }
 
-@media (max-width: 1200px) {
+@media (max-width: 700px) {
     .donor-dashboard-main {
         grid-template-columns: 1fr;
     }

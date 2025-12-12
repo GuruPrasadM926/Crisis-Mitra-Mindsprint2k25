@@ -1,6 +1,6 @@
 .needy-dashboard-container {
     min-height: 800px;
-    min-width: 700px;
+    min-width: 800px;
     display: flex;
     flex-direction: column;
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -126,7 +126,7 @@
 .requests-section {
     background: white;
     border-radius: 12px;
-    padding: 24px;
+    padding: 35px;
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
 }
 
@@ -156,7 +156,6 @@
 
 .empty-state {
     text-align: center;
-    padding: 40px 20px;
     color: #999;
 }
 
@@ -166,7 +165,7 @@
 }
 
 .empty-state .subtitle {
-    margin: 0;
+    margin: 40px;
     font-size: 14px;
     color: #bbb;
 }
