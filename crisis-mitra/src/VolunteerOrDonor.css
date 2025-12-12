@@ -1,6 +1,6 @@
 .vod-container {
     min-height: 800px;
-    min-width: 700px;
+    min-width: 800px;
     display: flex;
     flex-direction: column;
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);

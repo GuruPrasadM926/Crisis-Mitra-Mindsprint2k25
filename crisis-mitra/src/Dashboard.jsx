@@ -30,6 +30,10 @@ function Dashboard({ userName = 'User', onLogout, onRoleSelect, onProfileClick }
                 </div>
             </header>
 
+            <div className="dashboard-subtitle">
+                <p>Connecting resources and people</p>
+            </div>
+
             <div className="dashboard-main">
                 <main className="dashboard-content">
                     {/* Role Selection Section */}

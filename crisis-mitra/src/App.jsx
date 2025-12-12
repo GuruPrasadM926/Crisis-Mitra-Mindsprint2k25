@@ -89,6 +89,26 @@ function App() {
     }
   }, [])
 
+  // ===== SYNC DATA WITH BACKEND =====
+  const syncDataWithBackend = async (data) => {
+    try {
+      const response = await fetch('http://localhost:3001/api/sync-data', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+      })
+      if (response.ok) {
+        console.log('✅ Data synced to backend')
+      } else {
+        console.warn('⚠️ Backend sync failed:', response.status)
+      }
+    } catch (error) {
+      console.warn('⚠️ Cannot reach backend server (http://localhost:3001):', error.message)
+    }
+  }
+
   // ===== PERSISTENCE: Save app data whenever it changes =====
   useEffect(() => {
     if (isLoggedIn) {
@@ -102,6 +122,15 @@ function App() {
         timestamp: new Date().toISOString()
       }
       userDB.saveAppData(appData)
+
+      // Sync with backend
+      const allUsers = userDB.getAllUsers()
+      const authUser = userDB.getAuthUser()
+      syncDataWithBackend({
+        users: allUsers,
+        authUser: authUser,
+        appData: appData
+      })
     }
   }, [isLoggedIn, serviceRequests, incomingAlerts, upcomingAlerts, completedAlerts, volunteerUpcomingTasks, volunteerCompletedTasks])
 
@@ -250,16 +279,16 @@ function App() {
   // Handle needy accepting a volunteer/donor's acceptance
   const handleAcceptVolunteer = (requestId, acceptanceId) => {
     console.log('handleAcceptVolunteer called:', { requestId, acceptanceId })
-    
+
     // Mark the alert as accepted by needy - update BOTH incomingAlerts and serviceRequests
     setIncomingAlerts(prev => {
-      const updated = prev.map(alert => 
+      const updated = prev.map(alert =>
         alert.id === requestId ? { ...alert, acceptedByNeedy: true, acceptedAt: new Date() } : alert
       )
       console.log('Updated incomingAlerts:', updated.find(a => a.id === requestId))
       return updated
     })
-    
+
     setServiceRequests(prev => {
       const updated = prev.map(r => {
         if (r.id === requestId) {
@@ -287,7 +316,7 @@ function App() {
   // Handle needy rejecting a volunteer/donor's acceptance
   const handleRejectVolunteer = (requestId, acceptanceId, rejectionReason = '') => {
     console.log('handleRejectVolunteer called:', { requestId, acceptanceId, rejectionReason })
-    
+
     setServiceRequests(prev => {
       const updated = prev.map(r => {
         if (r.id === requestId) {
@@ -307,7 +336,7 @@ function App() {
       })
       return updated
     })
-    
+
     // Mark the alert as rejected by this needy with reason
     setIncomingAlerts(prev => {
       const updated = prev.map(alert => {
@@ -325,9 +354,87 @@ function App() {
       })
       return updated
     })
-    
+
     // Show success message
     alert('✓ Rejection sent successfully')
+  }
+
+  // Handle needy marking service as successful
+  const handleMarkServiceSuccess = (requestId, feedback = '') => {
+    console.log('handleMarkServiceSuccess called:', { requestId, feedback })
+
+    setServiceRequests(prev => {
+      const updated = prev.map(r => {
+        if (r.id === requestId) {
+          const updatedRequest = {
+            ...r,
+            serviceStatus: 'success',
+            serviceFeedback: feedback,
+            ratedAt: new Date().toISOString(),
+            status: 'Resolved'
+          }
+          console.log('Service marked as success:', updatedRequest)
+          return updatedRequest
+        }
+        return r
+      })
+      return updated
+    })
+
+    // Move from incoming alerts to completed alerts
+    const alertData = incomingAlerts.find(a => a.id === requestId)
+    if (alertData) {
+      setIncomingAlerts(prev => prev.filter(a => a.id !== requestId))
+      setCompletedAlerts(prev => [...prev, {
+        ...alertData,
+        serviceStatus: 'success',
+        serviceFeedback: feedback,
+        ratedAt: new Date().toISOString(),
+        completedAt: new Date().toISOString(),
+        status: 'Completed'
+      }])
+    }
+
+    window.alert('✓ Service marked as successful')
+  }
+
+  // Handle needy marking service as failed
+  const handleMarkServiceFailure = (requestId, feedback = '') => {
+    console.log('handleMarkServiceFailure called:', { requestId, feedback })
+
+    setServiceRequests(prev => {
+      const updated = prev.map(r => {
+        if (r.id === requestId) {
+          const updatedRequest = {
+            ...r,
+            serviceStatus: 'failure',
+            serviceFeedback: feedback,
+            ratedAt: new Date().toISOString(),
+            status: 'Failed'
+          }
+          console.log('Service marked as failure:', updatedRequest)
+          return updatedRequest
+        }
+        return r
+      })
+      return updated
+    })
+
+    // Move from incoming alerts to completed alerts
+    const alertItem = incomingAlerts.find(a => a.id === requestId)
+    if (alertItem) {
+      setIncomingAlerts(prev => prev.filter(a => a.id !== requestId))
+      setCompletedAlerts(prev => [...prev, {
+        ...alertItem,
+        serviceStatus: 'failure',
+        serviceFeedback: feedback,
+        ratedAt: new Date().toISOString(),
+        completedAt: new Date().toISOString(),
+        status: 'Failed'
+      }])
+    }
+
+    window.alert('✕ Service marked as failed/incomplete')
   }
 
   if (!isLoggedIn) {
@@ -519,6 +626,8 @@ function App() {
         }}
         onAcceptVolunteer={handleAcceptVolunteer}
         onRejectVolunteer={handleRejectVolunteer}
+        onMarkServiceSuccess={handleMarkServiceSuccess}
+        onMarkServiceFailure={handleMarkServiceFailure}
         onBack={() => navigateToPage('dashboard')}
       />
     }
@@ -567,8 +676,28 @@ function App() {
             acceptances: correspondingRequest?.acceptances || []
           }
         })}
-        upcomingAlerts={upcomingAlerts}
-        completedAlerts={completedAlerts}
+        upcomingAlerts={upcomingAlerts.map(alert => {
+          // Also merge upcoming alerts with service request data
+          const correspondingRequest = serviceRequests.find(r => r.id === alert.id)
+          return {
+            ...alert,
+            acceptedByNeedy: correspondingRequest?.acceptedByNeedy || false,
+            rejectedByNeedy: correspondingRequest?.rejectedByNeedy || false,
+            rejectionReason: correspondingRequest?.rejectionReason || '',
+            acceptances: correspondingRequest?.acceptances || []
+          }
+        })}
+        completedAlerts={completedAlerts.map(alert => {
+          // Also merge completed alerts with service request data
+          const correspondingRequest = serviceRequests.find(r => r.id === alert.id)
+          return {
+            ...alert,
+            acceptedByNeedy: correspondingRequest?.acceptedByNeedy || false,
+            rejectedByNeedy: correspondingRequest?.rejectedByNeedy || false,
+            rejectionReason: correspondingRequest?.rejectionReason || '',
+            acceptances: correspondingRequest?.acceptances || []
+          }
+        })}
         onAcceptAlert={handleAcceptAlert}
         onCompleteAlert={handleCompleteAlert}
       />

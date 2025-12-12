@@ -34,8 +34,8 @@ function VolunteerDashboard({
 
     // Map serviceRequests to alert format for display
     const alerts = serviceRequests
-        .filter(req => 
-            !upcomingTasks.some(t => t.id === req.id || String(t.id) === String(req.id)) && 
+        .filter(req =>
+            !upcomingTasks.some(t => t.id === req.id || String(t.id) === String(req.id)) &&
             !completedTasks.some(t => t.id === req.id || String(t.id) === String(req.id))
         ) // Only show requests not yet accepted AND not completed
         .map(req => ({
@@ -202,6 +202,16 @@ function VolunteerDashboard({
                                         <strong>{t.title || t.service}</strong>
                                         <span className="muted">{t.date || t.completedAt?.split('T')[0]}</span>
                                     </div>
+                                    {t.serviceStatus && (
+                                        <div style={{ marginTop: '8px', fontSize: '12px', padding: '6px', backgroundColor: t.serviceStatus === 'success' ? '#d4edda' : '#f8d7da', color: t.serviceStatus === 'success' ? '#155724' : '#721c24', borderRadius: '4px' }}>
+                                            {t.serviceStatus === 'success' ? '✓ Success' : '✗ Failed'}
+                                            {t.serviceFeedback && (
+                                                <div style={{ marginTop: '4px', fontSize: '11px' }}>
+                                                    {t.serviceFeedback}
+                                                </div>
+                                            )}
+                                        </div>
+                                    )}
                                 </li>
                             ))}
                         </ul>

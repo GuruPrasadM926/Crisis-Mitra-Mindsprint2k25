@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crisis Mitra - Data Download Center</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            max-width: 600px;
+            width: 100%;
+            padding: 40px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+
+        .header p {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .status {
+            background: #f0f4ff;
+            border-left: 4px solid #667eea;
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 30px;
+            font-size: 14px;
+            color: #333;
+        }
+
+        .status strong {
+            color: #667eea;
+        }
+
+        .downloads {
+            display: grid;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .download-card {
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            color: inherit;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .download-card:hover {
+            border-color: #667eea;
+            background: #f9f9f9;
+            transform: translateX(5px);
+        }
+
+        .download-card.csv {
+            border-color: #10b981;
+        }
+
+        .download-card.csv:hover {
+            border-color: #10b981;
+            background: #f0fdf4;
+        }
+
+        .download-card.json {
+            border-color: #f59e0b;
+        }
+
+        .download-card.json:hover {
+            border-color: #f59e0b;
+            background: #fffbf0;
+        }
+
+        .download-info {
+            flex: 1;
+        }
+
+        .download-icon {
+            font-size: 32px;
+            margin-right: 20px;
+        }
+
+        .download-title {
+            font-weight: 600;
+            font-size: 16px;
+            margin-bottom: 5px;
+        }
+
+        .download-desc {
+            font-size: 13px;
+            color: #666;
+        }
+
+        .download-arrow {
+            font-size: 24px;
+            color: #ccc;
+        }
+
+        .file-info {
+            background: #f9f9f9;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            font-size: 13px;
+        }
+
+        .file-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            color: #666;
+        }
+
+        .file-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .file-name {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .file-details {
+            text-align: right;
+            color: #999;
+            font-size: 12px;
+        }
+
+        .actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        button {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: #f0f0f0;
+            color: #333;
+        }
+
+        .btn-secondary:hover {
+            background: #e0e0e0;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-left: 10px;
+        }
+
+        .status-online {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .status-offline {
+            background: #fee2e2;
+            color: #7f1d1d;
+        }
+
+        .data-sections {
+            background: #f9f9f9;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            font-size: 13px;
+            color: #666;
+        }
+
+        .data-sections h3 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+
+        .section-list {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .section-item {
+            padding: 6px;
+            background: white;
+            border-radius: 4px;
+            border-left: 3px solid #667eea;
+            padding-left: 10px;
+        }
+
+        .footer {
+            text-align: center;
+            font-size: 12px;
+            color: #999;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        .error-message {
+            background: #fee2e2;
+            color: #7f1d1d;
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .success-message {
+            background: #d1fae5;
+            color: #065f46;
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📥 Crisis Mitra Data Download</h1>
+            <p>Download all your app data directly to your computer</p>
+        </div>
+
+        <div id="errorMessage" class="error-message"></div>
+        <div id="successMessage" class="success-message"></div>
+
+        <div class="status">
+            <strong>Backend Status:</strong> <span id="statusText">Checking...</span>
+            <span id="statusBadge" class="status-badge">●</span>
+        </div>
+
+        <div class="data-sections">
+            <h3>📊 Includes 8 Data Sections:</h3>
+            <div class="section-list">
+                <div class="section-item">✓ Registered Users</div>
+                <div class="section-item">✓ Service Requests</div>
+                <div class="section-item">✓ Incoming Alerts</div>
+                <div class="section-item">✓ Upcoming Tasks</div>
+                <div class="section-item">✓ Completed Tasks</div>
+                <div class="section-item">✓ Volunteer Tasks</div>
+                <div class="section-item">✓ Current User</div>
+                <div class="section-item">✓ All Timestamps</div>
+            </div>
+        </div>
+
+        <div class="downloads">
+            <a href="http://localhost:3001/api/export/csv" download="SevaHub_Data.csv" class="download-card csv" id="csvDownload">
+                <div style="display: flex; align-items: center; flex: 1;">
+                    <div class="download-icon">📊</div>
+                    <div class="download-info">
+                        <div class="download-title">Export as CSV (Excel)</div>
+                        <div class="download-desc">8 sheets with all data • Open in Excel, Sheets, or any spreadsheet app</div>
+                    </div>
+                </div>
+                <div class="download-arrow">→</div>
+            </a>
+
+            <a href="http://localhost:3001/api/export/json" download="SevaHub_Data.json" class="download-card json" id="jsonDownload">
+                <div style="display: flex; align-items: center; flex: 1;">
+                    <div class="download-icon">📄</div>
+                    <div class="download-info">
+                        <div class="download-title">Export as JSON</div>
+                        <div class="download-desc">Structured data format • Use with APIs, Python, or other tools</div>
+                    </div>
+                </div>
+                <div class="download-arrow">→</div>
+            </a>
+        </div>
+
+        <div class="file-info">
+            <h3 style="margin-bottom: 10px; color: #333; font-size: 14px;">📁 File Information</h3>
+            <div id="fileInfo">
+                <div class="file-item">
+                    <span>Checking server...</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="actions">
+            <button class="btn-primary" onclick="downloadCSV()">📥 Download CSV Now</button>
+            <button class="btn-primary" onclick="downloadJSON()">📥 Download JSON Now</button>
+        </div>
+
+        <div class="actions" style="margin-top: 10px;">
+            <button class="btn-secondary" onclick="checkStatus()">🔄 Refresh Status</button>
+            <button class="btn-secondary" onclick="openApp()">🏠 Back to App</button>
+        </div>
+
+        <div class="footer">
+            <p>🔄 Data auto-syncs every time you make changes in the app</p>
+            <p>✅ Files download directly to your local Downloads folder</p>
+            <p style="margin-top: 10px; color: #ccc;">Backend Server: http://localhost:3001</p>
+        </div>
+    </div>
+
+    <script>
+        // Check backend status on page load
+        window.addEventListener('load', () => {
+            checkStatus();
+            setInterval(checkStatus, 5000); // Check every 5 seconds
+        });
+
+        async function checkStatus() {
+            try {
+                const response = await fetch('http://localhost:3001/api/health');
+                const data = await response.json();
+                
+                document.getElementById('statusText').textContent = `Online • Last Update: ${formatTime(new Date(data.lastDataUpdate))}`;
+                document.getElementById('statusBadge').className = 'status-badge status-online';
+                document.getElementById('statusBadge').textContent = '● Online';
+
+                // Get file info
+                const filesResponse = await fetch('http://localhost:3001/api/export/files');
+                const filesData = await filesResponse.json();
+                updateFileInfo(filesData.files);
+
+            } catch (error) {
+                document.getElementById('statusText').textContent = 'Offline • Start backend with: npm run dev';
+                document.getElementById('statusBadge').className = 'status-badge status-offline';
+                document.getElementById('statusBadge').textContent = '● Offline';
+                document.getElementById('fileInfo').innerHTML = '<div class="file-item"><span style="color: #d32f2f;">❌ Backend server not running</span></div>';
+            }
+        }
+
+        function updateFileInfo(files) {
+            let html = '';
+            if (files.length === 0) {
+                html = '<div class="file-item"><span style="color: #999;">No data synced yet • Make changes in the app first</span></div>';
+            } else {
+                files.forEach(file => {
+                    const size = (file.size / 1024).toFixed(2); // Convert to KB
+                    const updated = formatTime(new Date(file.lastModified));
+                    html += `
+                        <div class="file-item">
+                            <span class="file-name">${file.name}</span>
+                            <span class="file-details">${size} KB • ${updated}</span>
+                        </div>
+                    `;
+                });
+            }
+            document.getElementById('fileInfo').innerHTML = html;
+        }
+
+        function formatTime(date) {
+            if (date.toString() === 'Invalid Date') return 'Unknown';
+            const now = new Date();
+            const diff = now - date;
+            
+            if (diff < 60000) return 'Just now';
+            if (diff < 3600000) return Math.floor(diff / 60000) + 'm ago';
+            if (diff < 86400000) return Math.floor(diff / 3600000) + 'h ago';
+            
+            return date.toLocaleDateString() + ' ' + date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+        }
+
+        async function downloadCSV() {
+            try {
+                const response = await fetch('http://localhost:3001/api/export/csv');
+                if (!response.ok) throw new Error('Download failed');
+                
+                const blob = await response.blob();
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `SevaHub_Data_${new Date().toISOString().split('T')[0]}.csv`;
+                document.body.appendChild(a);
+                a.click();
+                window.URL.revokeObjectURL(url);
+                document.body.removeChild(a);
+                
+                showSuccess('✅ CSV downloaded to your Downloads folder!');
+            } catch (error) {
+                showError('❌ Failed to download CSV. Make sure backend is running.');
+            }
+        }
+
+        async function downloadJSON() {
+            try {
+                const response = await fetch('http://localhost:3001/api/export/json');
+                if (!response.ok) throw new Error('Download failed');
+                
+                const blob = await response.blob();
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `SevaHub_Data_${new Date().toISOString().split('T')[0]}.json`;
+                document.body.appendChild(a);
+                a.click();
+                window.URL.revokeObjectURL(url);
+                document.body.removeChild(a);
+                
+                showSuccess('✅ JSON downloaded to your Downloads folder!');
+            } catch (error) {
+                showError('❌ Failed to download JSON. Make sure backend is running.');
+            }
+        }
+
+        function showError(message) {
+            const el = document.getElementById('errorMessage');
+            el.textContent = message;
+            el.style.display = 'block';
+            setTimeout(() => el.style.display = 'none', 4000);
+        }
+
+        function showSuccess(message) {
+            const el = document.getElementById('successMessage');
+            el.textContent = message;
+            el.style.display = 'block';
+            setTimeout(() => el.style.display = 'none', 4000);
+        }
+
+        function openApp() {
+            window.location.href = 'http://localhost:5174';
+        }
+    </script>
+</body>
+</html>

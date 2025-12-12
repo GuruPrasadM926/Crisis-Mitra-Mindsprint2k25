@@ -1,30 +1,63 @@
 // TempDB.js - Database for user registration and authentication
-// Uses localStorage (with Firebase support when configured)
+// Uses localStorage with optional Firebase Realtime Database sync
 // API works seamlessly for all signup/login pages
+
+import { FirebaseDB } from './FirebaseDB'
 
 class UserDatabase {
     constructor() {
         this.storageKey = 'sevaHubUsers'
+        this.firebaseEnabled = false
+        this.currentUserId = null
         this.loadUsers()
+        this.checkFirebaseConfig()
+    }
+
+    // Check if Firebase is configured
+    checkFirebaseConfig() {
+        try {
+            if (import.meta.env.VITE_FIREBASE_API_KEY && 
+                import.meta.env.VITE_FIREBASE_API_KEY !== 'AIzaSyDemoKeyChangeThis') {
+                this.firebaseEnabled = true
+                console.log('✅ Firebase is configured and enabled')
+            } else {
+                console.log('⚠️ Firebase not configured - using localStorage only')
+            }
+        } catch (error) {
+            console.log('⚠️ Firebase config check failed - using localStorage only')
+        }
     }
 
     loadUsers() {
         try {
             const stored = localStorage.getItem(this.storageKey)
             this.users = stored ? JSON.parse(stored) : []
-            console.log('Loaded users from localStorage:', this.users.length)
+            console.log('✅ Loaded users from localStorage:', this.users.length)
         } catch (error) {
-            console.error('Error loading users:', error)
+            console.error('❌ Error loading users:', error)
             this.users = []
         }
     }
 
-    saveUsers() {
+    async saveUsers() {
         try {
             localStorage.setItem(this.storageKey, JSON.stringify(this.users))
-            console.log('Users saved to localStorage')
+            console.log('✅ Users saved to localStorage')
+            
+            // Also sync to Firebase if enabled
+            if (this.firebaseEnabled && this.currentUserId) {
+                try {
+                    await FirebaseDB.updateUser(this.currentUserId, { 
+                        allUsers: this.users,
+                        updatedAt: new Date().toISOString()
+                    })
+                    console.log('✅ Users synced to Firebase')
+                } catch (fbError) {
+                    console.warn('⚠️ Firebase sync failed:', fbError.message)
+                }
+            }
         } catch (error) {
-            console.error('Error saving users:', error)
+            console.error('❌ Error saving users:', error)
         }
     }
 
@@ -178,12 +211,22 @@ class UserDatabase {
     }
 
     // Save all app data (alerts, requests, tasks)
-    saveAppData(appData) {
+    async saveAppData(appData) {
         try {
             localStorage.setItem('sevaHubAppData', JSON.stringify(appData))
-            console.log('App data saved to localStorage')
+            console.log('✅ App data saved to localStorage')
+            
+            // Also sync to Firebase if enabled and user is logged in
+            if (this.firebaseEnabled && this.currentUserId) {
+                try {
+                    await FirebaseDB.saveAppData(this.currentUserId, appData)
+                    console.log('✅ App data synced to Firebase')
+                } catch (fbError) {
+                    console.warn('⚠️ Firebase app data sync failed:', fbError.message)
+                }
+            }
         } catch (error) {
-            console.error('Error saving app data:', error)
+            console.error('❌ Error saving app data:', error)
         }
     }
 
@@ -193,7 +236,27 @@ class UserDatabase {
             const stored = localStorage.getItem('sevaHubAppData')
             return stored ? JSON.parse(stored) : null
         } catch (error) {
-            console.error('Error loading app data:', error)
+            console.error('❌ Error loading app data:', error)
+            return null
+        }
+    }
+
+    // Load app data from Firebase (sync down)
+    async loadAppDataFromFirebase(userId) {
+        try {
+            if (!this.firebaseEnabled) {
+                console.log('⚠️ Firebase not enabled')
+                return null
+            }
+            const data = await FirebaseDB.getAppData(userId)
+            if (data) {
+                localStorage.setItem('sevaHubAppData', JSON.stringify(data))
+                console.log('✅ App data loaded from Firebase and synced to localStorage')
+                return data
+            }
+            return null
+        } catch (error) {
+            console.error('❌ Error loading app data from Firebase:', error)
             return null
         }
     }
@@ -202,9 +265,58 @@ class UserDatabase {
     clearAppData() {
         try {
             localStorage.removeItem('sevaHubAppData')
-            console.log('App data cleared')
+            console.log('✅ App data cleared')
         } catch (error) {
-            console.error('Error clearing app data:', error)
+            console.error('❌ Error clearing app data:', error)
+        }
+    }
+
+    // ===== FIREBASE SYNC OPERATIONS =====
+
+    // Set current user ID for Firebase sync
+    setCurrentUserId(userId) {
+        this.currentUserId = userId
+        console.log('Current user ID set for Firebase sync:', userId)
+    }
+
+    // Get Firebase enabled status
+    isFirebaseEnabled() {
+        return this.firebaseEnabled
+    }
+
+    // Sync current user to Firebase
+    async syncUserToFirebase(userId, userData) {
+        try {
+            if (!this.firebaseEnabled) {
+                console.log('⚠️ Firebase not enabled')
+                return false
+            }
+            const success = await FirebaseDB.saveUser(userId, userData)
+            if (success) {
+                console.log('✅ User synced to Firebase:', userId)
+            }
+            return success
+        } catch (error) {
+            console.error('❌ Error syncing user to Firebase:', error)
+            return false
+        }
+    }
+
+    // Sync all data to Firebase
+    async syncCompleteDataToFirebase(userId, profileData, appData) {
+        try {
+            if (!this.firebaseEnabled) {
+                console.log('⚠️ Firebase not enabled')
+                return false
+            }
+            const success = await FirebaseDB.saveCompleteUserData(userId, profileData, appData)
+            if (success) {
+                console.log('✅ Complete user data synced to Firebase:', userId)
+            }
+            return success
+        } catch (error) {
+            console.error('❌ Error syncing complete data to Firebase:', error)
+            return false
         }
     }
 }

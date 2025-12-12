@@ -1,0 +1,30 @@
+REGISTERED USERS
+ID,Name,Email,Phone,City,Pincode,DOB,Blood Type,Role,Age,Created At
+"1765451763982","guru","guruv.24.beai@acharya.ac.in","7204870390","bangalore","562162","","","volunteer","",""
+"1765465478533","Guru Prasad M","gururprasad123@gmail.com","7204870390","Bangalore","562162","2006-02-09","","volunteer","",""
+"1765466462252","df","ayush@gmail.com","7894561230","delhi","456654","2007-12-04","","needy","",""
+"1765487514438","Guru Prasad M","sdgfdsrt@gmail.com","5544568954","Bangalore","562162","2007-12-11","","donor","",""
+"1765487570026","Guru Prasad M","me@gmail.com","7894561230","Bangalore","562162","2007-12-11","","donor","",""
+"1765489993299","Guru Prasad M","me1@gmail.com","7204870390","Bangalore","562162","2007-12-11","","needy","",""
+
+CURRENT LOGGED-IN USER
+ID,Name,Email,Phone,Age,Blood Type,Role
+"1765465478533","Guru Prasad M","gururprasad123@gmail.com","7204870390","","","volunteer"
+
+SERVICE REQUESTS
+ID,Name,Service,Date,Place,Phone,Email,Status,Blood Type,Accepted By,Accepted By Needy,Rejected By Needy,Rejection Reason,Number of Acceptances
+
+INCOMING ALERTS (BLOOD/ORGAN)
+ID,Blood Type,Units,Hospital,Urgency,Requester,Contact,Accepted By Needy,Rejected By Needy,Rejection Reason,Created At
+
+UPCOMING ALERTS (DONOR TASKS)
+ID,Blood Type,Units,Hospital,Urgency,Accepted By,Accepted At
+
+COMPLETED ALERTS (DONOR TASKS)
+ID,Blood Type,Units,Hospital,Urgency,Status,Completed At
+
+VOLUNTEER UPCOMING TASKS
+ID,Service,Date,Place,Volunteer Name,Accepted By,Accepted At
+
+VOLUNTEER COMPLETED TASKS
+ID,Service,Date,Place,Volunteer Name,Status,Completed At

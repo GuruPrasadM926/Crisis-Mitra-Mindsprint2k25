@@ -1,0 +1,52 @@
+# ⚡ Firebase Activation - 2 Minute Setup
+
+## Only 2 Steps Needed!
+
+### Step 1️⃣: Update Firebase Rules (1 minute)
+
+Go to: **https://console.firebase.google.com/project/seva-hub**
+
+1. Click **"Realtime Database"** (left sidebar)
+2. Click **"Rules"** tab (top)
+3. Delete existing rules
+4. Paste this:
+
+```json
+{
+  "rules": {
+    "users": {
+      "$uid": {
+        ".read": true,
+        ".write": true
+      }
+    }
+  }
+}
+```
+
+5. Click **"Publish"** button
+
+### Step 2️⃣: Restart App (1 minute)
+
+```bash
+cd /workspaces/Crisis-Mitra-Mindsprint2k25/crisis-mitra
+npm run dev
+```
+
+Watch for message: `✅ Firebase is configured and enabled`
+
+---
+
+## Done! ✅
+
+Your data now syncs to Firebase automatically.
+
+**Test it:**
+1. Open app: `http://localhost:5174`
+2. Create a blood request or task
+3. Go to Firebase Console → Realtime Database → Data
+4. See your data appear! 📊
+
+---
+
+**That's it!** No more steps needed.

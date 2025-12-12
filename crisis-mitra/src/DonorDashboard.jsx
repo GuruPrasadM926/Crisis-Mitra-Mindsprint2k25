@@ -189,6 +189,17 @@ function DonorDashboard({
                                         {alert.requesterName && <p><strong>Requester:</strong> {alert.requesterName}</p>}
                                         <p><strong>Scheduled:</strong> {new Date(alert.acceptedAt).toLocaleDateString()}</p>
                                     </div>
+                                    {alert.acceptedByNeedy && (
+                                        <div style={{ padding: '10px', backgroundColor: '#e8f5e9', borderRadius: '6px', marginBottom: '10px', color: '#2e7d32', fontSize: '13px', fontWeight: '600', textAlign: 'center' }}>
+                                            ✓ Accepted by Needy
+                                        </div>
+                                    )}
+                                    {alert.rejectedByNeedy && (
+                                        <div style={{ padding: '10px', backgroundColor: '#ffebee', borderRadius: '6px', marginBottom: '10px', color: '#c92a2a', fontSize: '13px', fontWeight: '600' }}>
+                                            <div>✗ Rejected by Needy</div>
+                                            <div style={{ fontSize: '12px', marginTop: '5px' }}>Reason: {alert.rejectionReason}</div>
+                                        </div>
+                                    )}
                                     {selectedUpcoming === alert.id && (
                                         <div className="completion-buttons">
                                             <button
@@ -238,8 +249,8 @@ function DonorDashboard({
                                 <div key={alert.id} className={`alert-card completed-alert status-${alert.status}`}>
                                     <div className="alert-header">
                                         <span className="blood-type-label">{alert.bloodType}</span>
-                                        <span className={`status-badge status-${alert.status}`}>
-                                            {alert.status === 'success' ? '✓ Success' : '✗ Unsuccessful'}
+                                        <span className={`status-badge status-${alert.serviceStatus || alert.status}`}>
+                                            {alert.serviceStatus === 'success' ? '✓ Success' : alert.serviceStatus === 'failure' ? '✗ Failed' : '✓ Completed'}
                                         </span>
                                     </div>
                                     <div className="alert-details">
@@ -249,6 +260,22 @@ function DonorDashboard({
                                         {alert.requesterName && <p><strong>Requester:</strong> {alert.requesterName}</p>}
                                         <p><strong>Completed:</strong> {new Date(alert.completedAt).toLocaleDateString()}</p>
                                     </div>
+                                    {alert.serviceFeedback && (
+                                        <div style={{ padding: '10px', backgroundColor: '#f5f5f5', borderRadius: '6px', marginBottom: '10px', fontSize: '13px' }}>
+                                            <strong>Feedback:</strong> {alert.serviceFeedback}
+                                        </div>
+                                    )}
+                                    {alert.acceptedByNeedy && (
+                                        <div style={{ padding: '10px', backgroundColor: '#e8f5e9', borderRadius: '6px', marginBottom: '10px', color: '#2e7d32', fontSize: '13px', fontWeight: '600', textAlign: 'center' }}>
+                                            ✓ Accepted by Needy
+                                        </div>
+                                    )}
+                                    {alert.rejectedByNeedy && (
+                                        <div style={{ padding: '10px', backgroundColor: '#ffebee', borderRadius: '6px', marginBottom: '10px', color: '#c92a2a', fontSize: '13px', fontWeight: '600' }}>
+                                            <div>✗ Rejected by Needy</div>
+                                            <div style={{ fontSize: '12px', marginTop: '5px' }}>Reason: {alert.rejectionReason}</div>
+                                        </div>
+                                    )}
                                 </div>
                             ))
                         )}
