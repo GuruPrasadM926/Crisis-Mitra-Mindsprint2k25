@@ -1,4 +1,4 @@
-# Crisis-Mitra
+# Seva-Hub
 
 React + Vite web application for connecting donors, volunteers and people in need.
 
