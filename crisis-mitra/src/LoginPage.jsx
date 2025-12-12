@@ -7,7 +7,7 @@ function LoginPage({ onSignupClick, onLogin }) {
     const [password, setPassword] = useState('')
     const [error, setError] = useState('')
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault()
 
         if (!email || !password) {
@@ -16,7 +16,7 @@ function LoginPage({ onSignupClick, onLogin }) {
         }
 
         // Authenticate user with database
-        const result = userDB.authenticateUser(email, password)
+        const result = await userDB.authenticateUser(email, password)
 
         if (!result.success) {
             setError(result.message)

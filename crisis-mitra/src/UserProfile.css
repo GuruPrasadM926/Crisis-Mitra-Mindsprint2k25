@@ -162,6 +162,18 @@
     text-align: center;
 }
 
+.blood-group-badge {
+    background: #e53935;
+    color: white;
+    padding: 5px 15px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    display: inline-block;
+    text-align: center;
+    min-width: 50px;
+}
+
 .info-edit {
     display: flex;
     flex-direction: column;

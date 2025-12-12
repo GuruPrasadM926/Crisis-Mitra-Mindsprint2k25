@@ -48,6 +48,9 @@ function DonorDashboard({
         // Show all alerts that don't have a blood type specified (events, social services)
         if (!alert.bloodType) return true
 
+        // If donor hasn't set blood type yet, show all blood/organ requests
+        if (!userBloodType) return true
+
         // For blood and organ requests, only show if blood types are compatible
         const isBloodOrOrgan = alert.requestType === 'Blood' || alert.requestType === 'Organ'
         if (!isBloodOrOrgan) return true
@@ -124,6 +127,17 @@ function DonorDashboard({
                                         {alert.patientAge && <p><strong>Patient Age:</strong> {alert.patientAge}</p>}
                                         {alert.organType && <p><strong>Organ Type:</strong> {alert.organType}</p>}
                                     </div>
+                                    {alert.acceptedByNeedy && (
+                                        <div style={{ padding: '10px', backgroundColor: '#e8f5e9', borderRadius: '6px', marginBottom: '10px', color: '#2e7d32', fontSize: '13px', fontWeight: '600', textAlign: 'center' }}>
+                                            ✓ Accepted by Needy
+                                        </div>
+                                    )}
+                                    {alert.rejectedByNeedy && (
+                                        <div style={{ padding: '10px', backgroundColor: '#ffebee', borderRadius: '6px', marginBottom: '10px', color: '#c92a2a', fontSize: '13px', fontWeight: '600' }}>
+                                            <div>✗ Rejected by Needy</div>
+                                            <div style={{ fontSize: '12px', marginTop: '5px' }}>Reason: {alert.rejectionReason}</div>
+                                        </div>
+                                    )}
                                     {userBloodType && !isBloodTypeCompatible(userBloodType, alert.bloodType) && (
                                         <div style={{ padding: '10px', backgroundColor: '#ffebee', borderRadius: '6px', marginBottom: '10px', color: '#c92a2a', fontSize: '13px', fontWeight: '600', textAlign: 'center' }}>
                                             Blood type not compatible with universal donor rules
@@ -132,10 +146,10 @@ function DonorDashboard({
                                     <button
                                         className="accept-btn"
                                         onClick={() => handleAccept(alert)}
-                                        disabled={userBloodType && !isBloodTypeCompatible(userBloodType, alert.bloodType)}
+                                        disabled={userBloodType && !isBloodTypeCompatible(userBloodType, alert.bloodType) || alert.acceptedByNeedy || alert.rejectedByNeedy}
                                         style={{
-                                            opacity: userBloodType && !isBloodTypeCompatible(userBloodType, alert.bloodType) ? 0.5 : 1,
-                                            cursor: userBloodType && !isBloodTypeCompatible(userBloodType, alert.bloodType) ? 'not-allowed' : 'pointer'
+                                            opacity: (userBloodType && !isBloodTypeCompatible(userBloodType, alert.bloodType)) || alert.acceptedByNeedy || alert.rejectedByNeedy ? 0.5 : 1,
+                                            cursor: (userBloodType && !isBloodTypeCompatible(userBloodType, alert.bloodType)) || alert.acceptedByNeedy || alert.rejectedByNeedy ? 'not-allowed' : 'pointer'
                                         }}
                                     >
                                         ✓ Accept

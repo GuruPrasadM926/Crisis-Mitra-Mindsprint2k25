@@ -4,18 +4,19 @@ import { userDB } from './TempDB'
 import { calculateAge, getMaxDOB } from './utils'
 
 function VolunteerSignup({ onSignupSuccess, onLoginClick, onBack }) {
-    const [formData, setFormData] = useState({ name: '', phone: '', email: '', city: '', pincode: '', dob: '', password: '', confirmPassword: '' })
+    const [formData, setFormData] = useState({ name: '', phone: '', email: '', city: '', pincode: '', dob: '', bloodType: '', password: '', confirmPassword: '' })
     const [error, setError] = useState('')
     const [success, setSuccess] = useState('')
+    const bloodTypes = ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-']
 
     const handleChange = (e) => {
         const { name, value } = e.target
         setFormData(prev => ({ ...prev, [name]: value }))
     }
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault()
-        if (!formData.name || !formData.phone || !formData.email || !formData.city || !formData.pincode || !formData.dob || !formData.password || !formData.confirmPassword) {
+        if (!formData.name || !formData.phone || !formData.email || !formData.city || !formData.pincode || !formData.dob || !formData.bloodType || !formData.password || !formData.confirmPassword) {
             setError('Please fill in all fields')
             setSuccess('')
             return
@@ -38,7 +39,7 @@ function VolunteerSignup({ onSignupSuccess, onLoginClick, onBack }) {
         const name = formData.name
 
         // Save user to database
-        const result = userDB.registerUser({
+        const result = await userDB.registerUser({
             name: formData.name,
             email: formData.email,
             phone: formData.phone,
@@ -46,8 +47,11 @@ function VolunteerSignup({ onSignupSuccess, onLoginClick, onBack }) {
             city: formData.city,
             pincode: formData.pincode,
             dob: formData.dob,
+            bloodType: formData.bloodType,
             role: 'volunteer'
         })
+
+        console.log('Signup result:', result)
 
         if (!result.success) {
             setError(result.message)
@@ -55,9 +59,11 @@ function VolunteerSignup({ onSignupSuccess, onLoginClick, onBack }) {
             return
         }
 
-        setFormData({ name: '', phone: '', email: '', city: '', pincode: '', dob: '', password: '', confirmPassword: '' })
+        setFormData({ name: '', phone: '', email: '', city: '', pincode: '', dob: '', bloodType: '', password: '', confirmPassword: '' })
 
-        setTimeout(() => { if (onSignupSuccess) onSignupSuccess(name) }, 1000)
+        if (onSignupSuccess) {
+            setTimeout(() => onSignupSuccess(name), 1000)
+        }
     }
 
     return (
@@ -100,6 +106,17 @@ function VolunteerSignup({ onSignupSuccess, onLoginClick, onBack }) {
                     <div className="form-group">
                         <label htmlFor="dob">Date of Birth</label>
                         <input type="date" id="dob" name="dob" value={formData.dob} onChange={handleChange} max={getMaxDOB()} />
+                    </div>
+
+                    <div className="form-group">
+                        <label htmlFor="bloodType">Blood Type</label>
+                        <select id="bloodType" name="bloodType" value={formData.bloodType} onChange={handleChange}>
+                            <option value="">Select Blood Type</option>
+                            {bloodTypes.map(type => <option key={type} value={type}>{type}</option>)}
+                        </select>
+                    </div>
+
+                    <div className="form-group">
                         <label htmlFor="password">Password</label>
                         <input type="password" id="password" name="password" value={formData.password} onChange={handleChange} placeholder="Enter your password (min 6 characters)" />
                     </div>

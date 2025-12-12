@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import './VolunteerDashboard.css'
 
 function VolunteerDashboard({
@@ -16,6 +16,11 @@ function VolunteerDashboard({
 
     const [expandedAlert, setExpandedAlert] = useState(null)
 
+    useEffect(() => {
+        console.log('VolunteerDashboard - serviceRequests:', serviceRequests)
+        console.log('VolunteerDashboard - upcomingTasks:', upcomingTasks)
+    }, [serviceRequests, upcomingTasks])
+
     const addSkill = () => {
         const s = newSkill.trim()
         if (!s) return
@@ -28,18 +33,20 @@ function VolunteerDashboard({
     }
 
     // Map serviceRequests to alert format for display
-    const alerts = [
-        { id: 1, text: 'Blood donation camp near you on 2025-12-18', details: 'Blood donation drive at Community Hospital. Time: 10 AM - 4 PM. Contact: +91-9876543210' },
-        { id: 2, text: 'Urgent volunteers needed for flood relief', details: 'Help needed for flood relief in nearby areas. Bring supplies and be prepared for outdoor work. Reporting time: 6 AM tomorrow.' },
-        ...serviceRequests
-            .filter(req => !upcomingTasks.some(t => t.id === req.id)) // Only show requests not yet accepted
-            .map(req => ({
-                id: req.id,
-                text: `${req.name} requesting ${req.service} service on ${req.date}`,
-                details: `Location: ${req.place}\nContact: ${req.phone} | ${req.email}\nService Type: ${req.service}${req.bloodType ? `\nBlood Type: ${req.bloodType}` : ''}${req.patientAge ? `\nPatient Age: ${req.patientAge}` : ''}`,
-                requestId: req.id
-            }))
-    ]
+    const alerts = serviceRequests
+        .filter(req => 
+            !upcomingTasks.some(t => t.id === req.id || String(t.id) === String(req.id)) && 
+            !completedTasks.some(t => t.id === req.id || String(t.id) === String(req.id))
+        ) // Only show requests not yet accepted AND not completed
+        .map(req => ({
+            id: req.id,
+            text: `${req.name} requesting ${req.service} service on ${req.date}`,
+            details: `Location: ${req.place}\nContact: ${req.phone} | ${req.email}\nService Type: ${req.service}${req.bloodType ? `\nBlood Type: ${req.bloodType}` : ''}${req.patientAge ? `\nPatient Age: ${req.patientAge}` : ''}`,
+            requestId: req.id,
+            acceptedByNeedy: req.acceptedByNeedy,
+            rejectedByNeedy: req.rejectedByNeedy,
+            rejectionReason: req.rejectionReason
+        }))
 
     return (
         <div className="vdb-container">
@@ -117,21 +124,35 @@ function VolunteerDashboard({
                                 <div className="details-content">
                                     <p>{expandedAlert.details}</p>
                                 </div>
-                                <div style={{ display: 'flex', gap: '10px' }}>
-                                    {expandedAlert.requestId && onAcceptTask ? (
-                                        <button
-                                            className="remove-alert"
-                                            onClick={() => {
+                                {expandedAlert.acceptedByNeedy && (
+                                    <div style={{ padding: '10px', backgroundColor: '#e8f5e9', borderRadius: '6px', marginBottom: '10px', color: '#2e7d32', fontSize: '13px', fontWeight: '600', textAlign: 'center' }}>
+                                        ✓ Accepted by Needy
+                                    </div>
+                                )}
+                                {expandedAlert.rejectedByNeedy && (
+                                    <div style={{ padding: '10px', backgroundColor: '#ffebee', borderRadius: '6px', marginBottom: '10px', color: '#c92a2a', fontSize: '13px', fontWeight: '600' }}>
+                                        <div>✗ Rejected by Needy</div>
+                                        <div style={{ fontSize: '12px', marginTop: '5px' }}>Reason: {expandedAlert.rejectionReason}</div>
+                                    </div>
+                                )}
+                                <div style={{ display: 'flex', gap: '10px', marginTop: '10px' }}>
+                                    <button
+                                        className="remove-alert"
+                                        onClick={() => {
+                                            if (expandedAlert.requestId && onAcceptTask) {
                                                 onAcceptTask(expandedAlert.requestId)
                                                 setExpandedAlert(null)
-                                            }}
-                                        >
-                                            Accept Request
-                                        </button>
-                                    ) : null}
+                                            }
+                                        }}
+                                        disabled={expandedAlert.rejectedByNeedy}
+                                        style={{ backgroundColor: '#4CAF50', color: 'white', padding: '8px 16px', border: 'none', borderRadius: '4px', cursor: expandedAlert.rejectedByNeedy ? 'not-allowed' : 'pointer', fontWeight: 'bold', fontSize: '14px', opacity: expandedAlert.rejectedByNeedy ? 0.5 : 1 }}
+                                    >
+                                        ✓ Accept Request
+                                    </button>
                                     <button
                                         className="remove-alert"
                                         onClick={() => setExpandedAlert(null)}
+                                        style={{ backgroundColor: '#f44336', color: 'white', padding: '8px 16px', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold', fontSize: '14px' }}
                                     >
                                         Close
                                     </button>
@@ -144,12 +165,27 @@ function VolunteerDashboard({
                                     {alerts.map(a => (
                                         <li key={a.id} className="alert-item">
                                             <span className="alert-text">{a.text}</span>
-                                            <button
-                                                className="accept-alert"
-                                                onClick={() => setExpandedAlert(a)}
-                                            >
-                                                View
-                                            </button>
+                                            <div style={{ display: 'flex', gap: '8px' }}>
+                                                {a.requestId && onAcceptTask ? (
+                                                    <button
+                                                        className="accept-alert"
+                                                        onClick={() => {
+                                                            onAcceptTask(a.requestId)
+                                                        }}
+                                                        title="Accept this request"
+                                                        style={{ backgroundColor: '#4CAF50', color: 'white', padding: '6px 12px', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '14px' }}
+                                                    >
+                                                        ✓ Accept
+                                                    </button>
+                                                ) : null}
+                                                <button
+                                                    className="accept-alert"
+                                                    onClick={() => setExpandedAlert(a)}
+                                                    style={{ backgroundColor: '#2196F3', color: 'white', padding: '6px 12px', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '14px' }}
+                                                >
+                                                    View
+                                                </button>
+                                            </div>
                                         </li>
                                     ))}
                                 </ul>

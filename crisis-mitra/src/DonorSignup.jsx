@@ -14,7 +14,7 @@ function DonorSignup({ onSignupSuccess, onLoginClick, onBack }) {
         setFormData(prev => ({ ...prev, [name]: value }))
     }
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault()
         if (!formData.name || !formData.phone || !formData.email || !formData.city || !formData.pincode || !formData.dob || !formData.bloodType || !formData.password || !formData.confirmPassword) {
             setError('Please fill in all fields')
@@ -39,7 +39,7 @@ function DonorSignup({ onSignupSuccess, onLoginClick, onBack }) {
         const name = formData.name
 
         // Save user to database
-        const result = userDB.registerUser({
+        const result = await userDB.registerUser({
             name: formData.name,
             email: formData.email,
             phone: formData.phone,
@@ -47,10 +47,8 @@ function DonorSignup({ onSignupSuccess, onLoginClick, onBack }) {
             city: formData.city,
             pincode: formData.pincode,
             dob: formData.dob,
-            role: 'donor',
-            donorInfo: {
-                bloodType: formData.bloodType
-            }
+            bloodType: formData.bloodType,
+            role: 'donor'
         })
 
         if (!result.success) {

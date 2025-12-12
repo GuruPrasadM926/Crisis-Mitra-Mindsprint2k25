@@ -691,3 +691,146 @@
     background: #ccc;
     cursor: not-allowed;
 }
+
+/* Acceptances List Styles */
+.acceptances-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.acceptance-card {
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 16px;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.acceptance-card:hover {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-color: #667eea;
+}
+
+.acceptance-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.acceptance-header h4 {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 600;
+    color: #333;
+}
+
+.role-badge {
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.role-badge.volunteer {
+    background: #e3f2fd;
+    color: #1976d2;
+}
+
+.role-badge.donor {
+    background: #fce4ec;
+    color: #c2185b;
+}
+
+.acceptance-details {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 12px;
+}
+
+.acceptance-details .detail-group {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.acceptance-details .detail-group label {
+    font-size: 12px;
+    font-weight: 600;
+    color: #999;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.acceptance-details .detail-value {
+    font-size: 14px;
+    color: #333;
+}
+
+.acceptance-details .detail-value a {
+    color: #667eea;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.acceptance-details .detail-value a:hover {
+    text-decoration: underline;
+}
+
+.accepted-badge {
+    display: inline-block;
+    background: #4caf50;
+    color: white;
+    padding: 6px 12px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.acceptance-actions {
+    display: flex;
+    gap: 8px;
+    padding-top: 12px;
+    border-top: 1px solid #f0f0f0;
+}
+
+.accept-volunteer-btn {
+    flex: 1;
+    background: #4caf50;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 4px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.accept-volunteer-btn:hover {
+    background: #45a049;
+}
+
+.reject-volunteer-btn {
+    flex: 1;
+    background: #f44336;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 4px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.reject-volunteer-btn:hover {
+    background: #da190b;
+}

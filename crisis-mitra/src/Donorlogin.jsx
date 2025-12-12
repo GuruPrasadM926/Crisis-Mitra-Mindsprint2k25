@@ -1,13 +1,14 @@
 import { useState } from 'react'
 import './LoginPage.css'
 import { userDB } from './TempDB'
+import { calculateAge } from './utils'
 
 function DonorLogin({ onSignupClick, onLogin, onBack }) {
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
     const [error, setError] = useState('')
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault()
 
         if (!email || !password) {
@@ -16,7 +17,7 @@ function DonorLogin({ onSignupClick, onLogin, onBack }) {
         }
 
         // Authenticate user with database
-        const result = userDB.authenticateUser(email, password)
+        const result = await userDB.authenticateUser(email, password)
 
         if (!result.success) {
             setError(result.message)
@@ -26,10 +27,10 @@ function DonorLogin({ onSignupClick, onLogin, onBack }) {
         setError('')
         console.log('Donor login successful for user:', result.user)
 
-        // Use actual stored name and phone from database
+        // Calculate age from DOB and get blood type
+        const age = result.user.dob ? calculateAge(result.user.dob) : ''
+        const bloodType = result.user.bloodType || ''
         const phone = result.user.phone || '9999999999'
-        const age = result.user.donorInfo?.age || ''
-        const bloodType = result.user.donorInfo?.bloodType || ''
         if (onLogin) onLogin(result.user.name, phone, result.user.id, age, bloodType, email)
     }
 

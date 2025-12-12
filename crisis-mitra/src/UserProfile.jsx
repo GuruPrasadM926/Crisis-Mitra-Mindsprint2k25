@@ -150,6 +150,10 @@ function UserProfile({ userId, userName, onBack, onLogout }) {
                                 <span>{user?.dob || 'N/A'}</span>
                             </div>
                             <div className="info-row">
+                                <label>Blood Group:</label>
+                                <span>{user?.bloodType || 'N/A'}</span>
+                            </div>
+                            <div className="info-row">
                                 <label>City:</label>
                                 <span>{user?.city || 'N/A'}</span>
                             </div>

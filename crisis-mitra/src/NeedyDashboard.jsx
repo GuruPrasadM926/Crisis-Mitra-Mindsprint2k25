@@ -1,11 +1,14 @@
 import React, { useState } from 'react'
 import './NeedyDashboard.css'
 
-function NeedyDashboard({ userName, requests = [], onNewRequest, onPullRequest, onBack }) {
+function NeedyDashboard({ userName, requests = [], onNewRequest, onPullRequest, onBack, onAcceptVolunteer, onRejectVolunteer }) {
     const [selectedRequest, setSelectedRequest] = useState(null)
     const [deleteModalOpen, setDeleteModalOpen] = useState(false)
     const [requestToDelete, setRequestToDelete] = useState(null)
     const [deleteReason, setDeleteReason] = useState('')
+    const [rejectionModalOpen, setRejectionModalOpen] = useState(false)
+    const [rejectionMessage, setRejectionMessage] = useState('')
+    const [rejectionReason, setRejectionReason] = useState('')
 
     const deleteReasons = [
         'Not needed anymore',
@@ -13,6 +16,14 @@ function NeedyDashboard({ userName, requests = [], onNewRequest, onPullRequest, 
         'Changed plans',
         'Issue resolved',
         'Requesting different service',
+        'Other'
+    ]
+
+    const rejectionReasons = [
+        'Not suitable for the job',
+        'Better option available',
+        'Changed requirements',
+        'Found alternative help',
         'Other'
     ]
 
@@ -26,6 +37,30 @@ function NeedyDashboard({ userName, requests = [], onNewRequest, onPullRequest, 
         setRequestToDelete(request)
         setDeleteModalOpen(true)
         setDeleteReason('')
+    }
+
+    const handleRejectClick = (requestId, acceptanceId, acceptanceName) => {
+        setRejectionMessage(`Are you sure you want to reject ${acceptanceName}?`)
+        setRejectionReason('')
+        setRejectionModalOpen(true)
+        // Store request and acceptance id for use in confirmReject
+        setRequestToDelete({ id: requestId, acceptanceId: acceptanceId })
+    }
+
+    const confirmReject = () => {
+        if (!rejectionReason) {
+            alert('Please select a reason for rejection')
+            return
+        }
+        console.log('Confirming rejection:', { requestToDelete, rejectionReason })
+        if (onRejectVolunteer && requestToDelete) {
+            console.log('Calling onRejectVolunteer with:', requestToDelete.id, requestToDelete.acceptanceId, rejectionReason)
+            onRejectVolunteer(requestToDelete.id, requestToDelete.acceptanceId, rejectionReason)
+        }
+        setRejectionModalOpen(false)
+        setRequestToDelete(null)
+        setRejectionMessage('')
+        setRejectionReason('')
     }
 
     const confirmDelete = () => {
@@ -114,63 +149,84 @@ function NeedyDashboard({ userName, requests = [], onNewRequest, onPullRequest, 
 
                     {/* Acceptor Details Section */}
                     <aside className="acceptor-section">
-                        {selectedRequest && selectedRequest.acceptedBy ? (
+                        {selectedRequest ? (
                             <div className="acceptor-card">
-                                <h2>{selectedRequest.acceptedBy.role === 'Donor' ? 'Donor Information' : 'Volunteer Information'}</h2>
-                                <div className="acceptor-details">
-                                    <div className="detail-group">
-                                        <label>Full Name</label>
-                                        <div className="detail-value">{selectedRequest.acceptedBy.name}</div>
+                                <h2>Request Acceptances</h2>
+                                {selectedRequest.acceptances && selectedRequest.acceptances.length > 0 ? (
+                                    <div className="acceptances-list">
+                                        {selectedRequest.acceptances.map((acceptance, index) => (
+                                            <div key={index} className="acceptance-card">
+                                                <div className="acceptance-header">
+                                                    <h4>{acceptance.name}</h4>
+                                                    <span className={`role-badge ${acceptance.role.toLowerCase()}`}>
+                                                        {acceptance.role}
+                                                    </span>
+                                                </div>
+                                                <div className="acceptance-details">
+                                                    <div className="detail-group">
+                                                        <label>Email</label>
+                                                        <div className="detail-value">
+                                                            <a href={`mailto:${acceptance.email}`}>
+                                                                {acceptance.email}
+                                                            </a>
+                                                        </div>
+                                                    </div>
+                                                    <div className="detail-group">
+                                                        <label>Phone</label>
+                                                        <div className="detail-value">
+                                                            <a href={`tel:${acceptance.phone}`}>
+                                                                {acceptance.phone}
+                                                            </a>
+                                                        </div>
+                                                    </div>
+                                                    {acceptance.bloodType && (
+                                                        <div className="detail-group">
+                                                            <label>Blood Type</label>
+                                                            <div className="detail-value">{acceptance.bloodType}</div>
+                                                        </div>
+                                                    )}
+                                                    {selectedRequest.acceptedBy && selectedRequest.acceptedBy.id === acceptance.id && (
+                                                        <div className="detail-group">
+                                                            <span className="accepted-badge">✓ Selected Acceptor</span>
+                                                        </div>
+                                                    )}
+                                                </div>
+                                                <div className="acceptance-actions">
+                                                    {!selectedRequest.acceptedBy || selectedRequest.acceptedBy.id !== acceptance.id ? (
+                                                        <button
+                                                            className="accept-volunteer-btn"
+                                                            onClick={() => onAcceptVolunteer && onAcceptVolunteer(selectedRequest.id, acceptance.id)}
+                                                            title="Accept this volunteer/donor"
+                                                        >
+                                                            ✓ Accept
+                                                        </button>
+                                                    ) : null}
+                                                    <button
+                                                        className="reject-volunteer-btn"
+                                                        onClick={() => handleRejectClick(selectedRequest.id, acceptance.id, acceptance.name)}
+                                                        title="Reject this volunteer/donor"
+                                                    >
+                                                        ✕ Reject
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        ))}
                                     </div>
-                                    <div className="detail-group">
-                                        <label>Email</label>
-                                        <div className="detail-value">
-                                            <a href={`mailto:${selectedRequest.acceptedBy.email}`}>
-                                                {selectedRequest.acceptedBy.email}
-                                            </a>
-                                        </div>
+                                ) : (
+                                    <div className="empty-acceptor">
+                                        <p>⏳ Waiting for a volunteer to accept</p>
+                                        <p className="subtitle">Once someone accepts your request, their details will appear here</p>
                                     </div>
-                                    <div className="detail-group">
-                                        <label>Phone Number</label>
-                                        <div className="detail-value">
-                                            <a href={`tel:${selectedRequest.acceptedBy.phone}`}>
-                                                {selectedRequest.acceptedBy.phone}
-                                            </a>
-                                        </div>
-                                    </div>
-                                    {selectedRequest.acceptedBy.role && (
-                                        <div className="detail-group">
-                                            <label>Role</label>
-                                            <div className="detail-value">{selectedRequest.acceptedBy.role}</div>
-                                        </div>
-                                    )}
-                                    {selectedRequest.acceptedBy.bloodType && (
-                                        <div className="detail-group">
-                                            <label>Blood Type</label>
-                                            <div className="detail-value">{selectedRequest.acceptedBy.bloodType}</div>
-                                        </div>
-                                    )}
-                                    <button className="pull-request-btn" onClick={() => handleDeleteClick(selectedRequest)}>
-                                        Cancel Request
-                                    </button>
-                                </div>
-                            </div>
-                        ) : selectedRequest ? (
-                            <div className="acceptor-card empty">
-                                <h2>Request Details</h2>
-                                <div className="empty-acceptor">
-                                    <p>⏳ Waiting for a volunteer to accept</p>
-                                    <p className="subtitle">Once someone accepts your request, their details will appear here</p>
-                                    <button className="pull-request-btn" style={{ marginTop: '20px' }} onClick={() => handleDeleteClick(selectedRequest)}>
-                                        Cancel Request
-                                    </button>
-                                </div>
+                                )}
+                                <button className="pull-request-btn" onClick={() => handleDeleteClick(selectedRequest)} style={{ marginTop: '20px' }}>
+                                    Cancel Request
+                                </button>
                             </div>
                         ) : (
                             <div className="acceptor-card placeholder">
-                                <h2>Volunteer Information</h2>
+                                <h2>Request Acceptances</h2>
                                 <div className="placeholder-content">
-                                    <p>👉 Select a request from the list to view volunteer details</p>
+                                    <p>👉 Select a request from the list to view who accepted it</p>
                                 </div>
                             </div>
                         )}
@@ -207,6 +263,44 @@ function NeedyDashboard({ userName, requests = [], onNewRequest, onPullRequest, 
                                     </button>
                                     <button className="confirm-delete-btn" onClick={confirmDelete}>
                                         Confirm Cancel
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Rejection Modal */}
+                    {rejectionModalOpen && (
+                        <div className="modal-overlay" onClick={() => setRejectionModalOpen(false)}>
+                            <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+                                <div className="modal-header">
+                                    <h3>Reject Acceptance</h3>
+                                    <button className="modal-close" onClick={() => setRejectionModalOpen(false)}>✕</button>
+                                </div>
+                                <div className="modal-body">
+                                    <p>{rejectionMessage}</p>
+                                    <p style={{ fontSize: '14px', marginTop: '10px', color: '#666' }}>Please select a reason for rejection:</p>
+                                    <div className="reason-options">
+                                        {rejectionReasons.map((reason) => (
+                                            <label key={reason} className="reason-option">
+                                                <input
+                                                    type="radio"
+                                                    name="rejectionReason"
+                                                    value={reason}
+                                                    checked={rejectionReason === reason}
+                                                    onChange={(e) => setRejectionReason(e.target.value)}
+                                                />
+                                                <span>{reason}</span>
+                                            </label>
+                                        ))}
+                                    </div>
+                                </div>
+                                <div className="modal-footer">
+                                    <button className="cancel-btn" onClick={() => setRejectionModalOpen(false)}>
+                                        Back
+                                    </button>
+                                    <button className="confirm-delete-btn" onClick={confirmReject}>
+                                        Confirm Rejection
                                     </button>
                                 </div>
                             </div>

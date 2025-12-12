@@ -1,12 +1,13 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import './DonorForm.css'
+import { userDB } from './TempDB'
 
-function DonorForm({ userName = 'User', phone = '', onBack, onProfileClick, onSubmit }) {
+function DonorForm({ userName = 'User', phone = '', userAge = '', userBloodType = '', onBack, onProfileClick, onSubmit }) {
     const [formData, setFormData] = useState({
         name: userName,
         phone: phone,
-        age: '',
-        bloodType: '',
+        age: userAge,
+        bloodType: userBloodType,
         chronicDiseases: '', // 'yes' or 'no'
         chronicDiseasesList: [],
         recentIllness: '', // 'yes' or 'no'
@@ -21,6 +22,32 @@ function DonorForm({ userName = 'User', phone = '', onBack, onProfileClick, onSu
     })
     const [error, setError] = useState('')
     const [success, setSuccess] = useState('')
+
+    // Update form data when props change or from localStorage
+    useEffect(() => {
+        let finalAge = userAge
+        let finalBloodType = userBloodType
+        
+        // If props are empty, try to get from localStorage
+        if (!userAge || !userBloodType) {
+            const authUser = userDB.getAuthUser()
+            if (authUser) {
+                finalAge = authUser.age || userAge
+                finalBloodType = authUser.bloodType || userBloodType
+            }
+        }
+        
+        console.log('DonorForm props received:', { userName, phone, userAge, userBloodType })
+        console.log('DonorForm final values:', { finalAge, finalBloodType })
+        
+        setFormData(prev => ({
+            ...prev,
+            name: userName,
+            phone: phone,
+            age: String(finalAge),
+            bloodType: finalBloodType
+        }))
+    }, [userName, phone, userAge, userBloodType])
 
     const chronicDiseaseOptions = ['Diabetes', 'BP (High Blood Pressure)', 'Cancer', 'HIV', 'Asthma', 'Heart Disease', 'Other']
     const recentIllnessOptions = ['Fever', 'COVID-19', 'Flu', 'Cold', 'Jaundice', 'Malaria', 'Other']
@@ -63,6 +90,20 @@ function DonorForm({ userName = 'User', phone = '', onBack, onProfileClick, onSu
             return
         }
 
+        // Chronic diseases check
+        if (formData.chronicDiseases === 'yes') {
+            setError('⚠️ You cannot donate if you have chronic diseases.')
+            setSuccess('')
+            return
+        }
+
+        // Recent illness check
+        if (formData.recentIllness === 'yes') {
+            setError('⚠️ You cannot donate if you have had recent illness. Please wait until you have fully recovered.')
+            setSuccess('')
+            return
+        }
+
         // Vaccines validation
         if (formData.vaccines === 'yes' && !formData.vaccinesDays) {
             setError('Please enter number of days since vaccine')
@@ -70,7 +111,7 @@ function DonorForm({ userName = 'User', phone = '', onBack, onProfileClick, onSu
             return
         }
         if (formData.vaccines === 'yes' && parseInt(formData.vaccinesDays) < 14) {
-            setError('You must wait at least 2 weeks (14 days) after vaccination to donate')
+            setError('⚠️ You must wait at least 2 weeks (14 days) after vaccination to donate. You can donate in ' + (14 - parseInt(formData.vaccinesDays)) + ' day(s).')
             setSuccess('')
             return
         }
@@ -82,7 +123,7 @@ function DonorForm({ userName = 'User', phone = '', onBack, onProfileClick, onSu
             return
         }
         if (formData.alcoholDrugs === 'yes' && parseInt(formData.alcoholDrugsDays) < 2) {
-            setError('You must wait at least 2 days after alcohol/drugs/tobacco consumption to donate')
+            setError('⚠️ You must wait at least 2 days after alcohol/drugs/tobacco consumption to donate. You can donate in ' + (2 - parseInt(formData.alcoholDrugsDays)) + ' day(s).')
             setSuccess('')
             return
         }
@@ -165,8 +206,9 @@ function DonorForm({ userName = 'User', phone = '', onBack, onProfileClick, onSu
 
                     <form onSubmit={handleSubmit} className="donor-form">
                         {/* Personal Information */}
+                        {/* Personal Information - From Database */}
                         <div className="form-section">
-                            <h3>Personal Information</h3>
+                            <h3>Personal Information <span className="from-database">(from signup)</span></h3>
 
                             <div className="form-group">
                                 <label htmlFor="name">Full Name</label>
@@ -177,6 +219,7 @@ function DonorForm({ userName = 'User', phone = '', onBack, onProfileClick, onSu
                                     value={formData.name}
                                     readOnly
                                     className="input-readonly"
+                                    title="Name from your signup profile"
                                 />
                             </div>
 
@@ -189,29 +232,30 @@ function DonorForm({ userName = 'User', phone = '', onBack, onProfileClick, onSu
                                     value={formData.phone}
                                     readOnly
                                     className="input-readonly"
+                                    title="Phone Number from your signup profile"
                                 />
                             </div>
 
                             <div className="form-row">
                                 <div className="form-group">
-                                    <label htmlFor="age">Age *</label>
+                                    <label htmlFor="age">Age <span className="from-database"></span> </label>
                                     <input
                                         type="number"
                                         id="age"
                                         name="age"
-                                        value={formData.age}
+                                        value={formData.age || ''}
                                         onChange={handleChange}
-                                        placeholder="Enter your age (must be above 18)"
+                                        placeholder={userAge || ''}
                                         min="18"
                                     />
                                 </div>
 
                                 <div className="form-group">
-                                    <label htmlFor="bloodType">Blood Type *</label>
+                                    <label htmlFor="bloodType">Blood Type <span className="from-database"></span> </label>
                                     <select
                                         id="bloodType"
                                         name="bloodType"
-                                        value={formData.bloodType}
+                                        value={formData.bloodType || ''}
                                         onChange={handleChange}
                                     >
                                         <option value="">Select blood type</option>

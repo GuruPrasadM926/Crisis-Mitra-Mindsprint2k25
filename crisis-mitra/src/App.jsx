@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import './App.css'
 import LoginPage from './LoginPage'
 import SignupPage from './SignupPage'
@@ -17,6 +17,7 @@ import VolunteerDashboard from './VolunteerDashboard'
 import DonorDashboard from './DonorDashboard'
 import DonorForm from './DonorForm'
 import UserProfile from './UserProfile'
+import { userDB } from './TempDB'
 
 function App() {
   // Blood type compatibility checker
@@ -59,6 +60,51 @@ function App() {
   const [volunteerCompletedTasks, setVolunteerCompletedTasks] = useState([])
   const [currentTaskBeingAccepted, setCurrentTaskBeingAccepted] = useState(null)
 
+  // ===== PERSISTENCE: Load user session on app mount =====
+  useEffect(() => {
+    const authUser = userDB.getAuthUser()
+    if (authUser) {
+      // Restore user session
+      setIsLoggedIn(true)
+      setUserId(authUser.id)
+      setUserName(authUser.name)
+      setUserPhone(authUser.phone)
+      setUserEmail(authUser.email)
+      setUserAge(authUser.age)
+      setUserBloodType(authUser.bloodType)
+      setRoleSelected(authUser.role)
+
+      // Restore app data (alerts, requests, tasks)
+      const appData = userDB.loadAppData()
+      if (appData) {
+        setServiceRequests(appData.serviceRequests || [])
+        setIncomingAlerts(appData.incomingAlerts || [])
+        setUpcomingAlerts(appData.upcomingAlerts || [])
+        setCompletedAlerts(appData.completedAlerts || [])
+        setVolunteerUpcomingTasks(appData.volunteerUpcomingTasks || [])
+        setVolunteerCompletedTasks(appData.volunteerCompletedTasks || [])
+        setCurrentPage('dashboard')
+      }
+      console.log('User session restored:', authUser.email)
+    }
+  }, [])
+
+  // ===== PERSISTENCE: Save app data whenever it changes =====
+  useEffect(() => {
+    if (isLoggedIn) {
+      const appData = {
+        serviceRequests,
+        incomingAlerts,
+        upcomingAlerts,
+        completedAlerts,
+        volunteerUpcomingTasks,
+        volunteerCompletedTasks,
+        timestamp: new Date().toISOString()
+      }
+      userDB.saveAppData(appData)
+    }
+  }, [isLoggedIn, serviceRequests, incomingAlerts, upcomingAlerts, completedAlerts, volunteerUpcomingTasks, volunteerCompletedTasks])
+
   // Function to navigate to a new page and track history
   const navigateToPage = (page) => {
     if (page !== currentPage) {
@@ -93,24 +139,28 @@ function App() {
     if (currentAlertBeingAccepted) {
       // Check blood type compatibility before accepting
       if (formData && isBloodTypeCompatible(formData.bloodType, currentAlertBeingAccepted.bloodType)) {
+        const donorAcceptance = {
+          name: userName,
+          id: userId,
+          role: 'Donor',
+          phone: userPhone,
+          email: userEmail,
+          bloodType: formData.bloodType
+        }
         const upcomingAlert = {
           ...currentAlertBeingAccepted,
           acceptedAt: new Date().toISOString(),
-          acceptedBy: {
-            name: userName,
-            id: userId,
-            role: 'Donor',
-            phone: userPhone,
-            email: userEmail,
-            bloodType: formData.bloodType
-          }
+          acceptedBy: donorAcceptance
         }
         setUpcomingAlerts(prev => [...prev, upcomingAlert])
         setIncomingAlerts(prev => prev.filter(a => a.id !== currentAlertBeingAccepted.id))
-        // Also update the original service request with acceptedBy info
+        // Also update the original service request with acceptance info
         setServiceRequests(prev => prev.map(r =>
           r.id === currentAlertBeingAccepted.id
-            ? { ...r, acceptedBy: upcomingAlert.acceptedBy }
+            ? {
+              ...r,
+              acceptances: [...(r.acceptances || []), donorAcceptance]
+            }
             : r
         ))
         setCurrentAlertBeingAccepted(null)
@@ -143,9 +193,12 @@ function App() {
 
   // Handle volunteer accepting a service request
   const handleAcceptTask = (taskId) => {
-    const task = serviceRequests.find(t => t.id === taskId)
+    console.log('handleAcceptTask called with:', taskId)
+
+    // Handle service requests
+    const task = serviceRequests.find(t => t.id === taskId || String(t.id) === String(taskId))
     if (task) {
-      const acceptedByInfo = {
+      const volunteerAcceptance = {
         name: userName,
         id: userId,
         role: 'Volunteer',
@@ -155,32 +208,126 @@ function App() {
       const upcomingTask = {
         ...task,
         acceptedAt: new Date().toISOString(),
-        acceptedBy: acceptedByInfo
+        acceptedBy: volunteerAcceptance
       }
       setVolunteerUpcomingTasks(prev => [...prev, upcomingTask])
-      // Update the original service request with acceptedBy info for NeedyDashboard
-      setServiceRequests(prev => prev.map(r => r.id === taskId ? { ...r, acceptedBy: acceptedByInfo } : r))
+      // Update the original service request with acceptance info for NeedyDashboard
+      console.log('Regular task accepted:', upcomingTask)
+      setServiceRequests(prev => prev.map(r =>
+        r.id === taskId || String(r.id) === String(taskId)
+          ? { ...r, acceptances: [...(r.acceptances || []), volunteerAcceptance] }
+          : r
+      ))
+    } else {
+      console.warn('Task not found:', taskId, 'Available tasks:', serviceRequests.map(r => r.id))
     }
   }
 
   // Handle volunteer completing a task
   const handleCompleteTask = (taskId, status) => {
-    const task = volunteerUpcomingTasks.find(t => t.id === taskId)
+    console.log('handleCompleteTask called with:', taskId, 'status:', status)
+    const task = volunteerUpcomingTasks.find(t => t.id === taskId || String(t.id) === String(taskId))
     if (task) {
       const completedTask = {
         ...task,
         status: status === 'success' ? 'Resolved' : 'Unresolved',
         completedAt: new Date().toISOString()
       }
+      console.log('Task completed:', completedTask)
       setVolunteerCompletedTasks(prev => [...prev, completedTask])
-      setVolunteerUpcomingTasks(prev => prev.filter(t => t.id !== taskId))
+      setVolunteerUpcomingTasks(prev => prev.filter(t => t.id !== taskId && String(t.id) !== String(taskId)))
       // Update serviceRequests status as well for NeedyDashboard
       setServiceRequests(prev => prev.map(r =>
-        r.id === taskId
+        r.id === taskId || String(r.id) === String(taskId)
           ? { ...r, status: status === 'success' ? 'Resolved' : 'Unresolved' }
           : r
       ))
+    } else {
+      console.warn('Task not found in upcoming tasks:', taskId, 'Available tasks:', volunteerUpcomingTasks.map(t => ({ id: t.id, service: t.service })))
     }
+  }
+
+  // Handle needy accepting a volunteer/donor's acceptance
+  const handleAcceptVolunteer = (requestId, acceptanceId) => {
+    console.log('handleAcceptVolunteer called:', { requestId, acceptanceId })
+    
+    // Mark the alert as accepted by needy - update BOTH incomingAlerts and serviceRequests
+    setIncomingAlerts(prev => {
+      const updated = prev.map(alert => 
+        alert.id === requestId ? { ...alert, acceptedByNeedy: true, acceptedAt: new Date() } : alert
+      )
+      console.log('Updated incomingAlerts:', updated.find(a => a.id === requestId))
+      return updated
+    })
+    
+    setServiceRequests(prev => {
+      const updated = prev.map(r => {
+        if (r.id === requestId) {
+          console.log('Updating service request:', { id: r.id, acceptances: r.acceptances })
+          // Find the acceptance with matching id
+          const acceptedVolunteer = r.acceptances?.find(a => a.id === acceptanceId)
+          if (acceptedVolunteer) {
+            const newRequest = {
+              ...r,
+              acceptedBy: acceptedVolunteer,
+              status: 'Accepted',
+              acceptedByNeedy: true,
+              acceptedAt: new Date()
+            }
+            console.log('New service request state:', newRequest)
+            return newRequest
+          }
+        }
+        return r
+      })
+      return updated
+    })
+  }
+
+  // Handle needy rejecting a volunteer/donor's acceptance
+  const handleRejectVolunteer = (requestId, acceptanceId, rejectionReason = '') => {
+    console.log('handleRejectVolunteer called:', { requestId, acceptanceId, rejectionReason })
+    
+    setServiceRequests(prev => {
+      const updated = prev.map(r => {
+        if (r.id === requestId) {
+          const rejectedAcceptance = r.acceptances?.find(a => a.id === acceptanceId)
+          console.log(`Rejected ${rejectedAcceptance?.name} for request ${requestId}. Reason: ${rejectionReason}`)
+          const newRequest = {
+            ...r,
+            acceptances: r.acceptances?.filter(a => a.id !== acceptanceId) || [],
+            rejectedByNeedy: true,
+            rejectionReason: rejectionReason,
+            rejectedAt: new Date()
+          }
+          console.log('Updated service request after rejection:', newRequest)
+          return newRequest
+        }
+        return r
+      })
+      return updated
+    })
+    
+    // Mark the alert as rejected by this needy with reason
+    setIncomingAlerts(prev => {
+      const updated = prev.map(alert => {
+        if (alert.id === requestId) {
+          const newAlert = {
+            ...alert,
+            rejectedByNeedy: true,
+            rejectionReason: rejectionReason,
+            rejectedAt: new Date()
+          }
+          console.log('Updated incoming alert after rejection:', newAlert)
+          return newAlert
+        }
+        return alert
+      })
+      return updated
+    })
+    
+    // Show success message
+    alert('✓ Rejection sent successfully')
   }
 
   if (!isLoggedIn) {
@@ -225,6 +372,7 @@ function App() {
             setUserAge(age || '')
             setUserBloodType(bloodType || '')
             setIsLoggedIn(true)
+            userDB.setAuthUser({ id, name, phone, email, age, bloodType, role: 'donor' })
             navigateToPage('donor')
           }} onBack={() => navigateToPage('volunteerOrDonor')} />
         }
@@ -234,6 +382,7 @@ function App() {
           setUserEmail(email || '')
           setUserId(id)
           setIsLoggedIn(true)
+          userDB.setAuthUser({ id, name, phone, email, role: 'volunteer' })
           navigateToPage('volunteer')
         }} onBack={() => navigateToPage('volunteerOrDonor')} />
       }
@@ -242,6 +391,7 @@ function App() {
           setUserName(name || 'User')
           setUserId(id)
           setIsLoggedIn(true)
+          userDB.setAuthUser({ id, name, role: 'needy' })
           navigateToPage('needy')
         }} onBack={() => { setRoleSelected(null); navigateToPage(isLoggedIn ? 'needy' : 'dashboard') }} />
       }
@@ -250,6 +400,7 @@ function App() {
         setUserName(name || 'User')
         setUserId(id)
         setIsLoggedIn(true)
+        userDB.setAuthUser({ id, name, role: roleSelected })
         if (roleSelected === 'needy') {
           navigateToPage('needy')
         } else if (roleSelected === 'volunteer') {
@@ -263,6 +414,8 @@ function App() {
     // default: show dashboard (role selection) before auth
     return <Dashboard userName={userName} onLogout={() => {
       setIsLoggedIn(false)
+      userDB.clearAuthUser()
+      userDB.clearAppData()
       setCurrentPage('login')
     }} onRoleSelect={(role) => {
       setRoleSelected(role)
@@ -284,6 +437,8 @@ function App() {
         onBack={goBack}
         onLogout={() => {
           setIsLoggedIn(false)
+          userDB.clearAuthUser()
+          userDB.clearAppData()
           setCurrentPage('dashboard')
           setPageHistory(['dashboard'])
           setRoleSelected(null)
@@ -362,6 +517,8 @@ function App() {
           // Also remove from donor incoming alerts if it was a blood/organ request
           setIncomingAlerts(prev => prev.filter(a => a.id !== id))
         }}
+        onAcceptVolunteer={handleAcceptVolunteer}
+        onRejectVolunteer={handleRejectVolunteer}
         onBack={() => navigateToPage('dashboard')}
       />
     }
@@ -385,7 +542,9 @@ function App() {
       return <DonorForm
         userName={userName}
         phone={userPhone}
-        onBack={() => navigateToPage('volunteerOrDonor')}
+        userAge={userAge}
+        userBloodType={userBloodType}
+        onBack={() => navigateToPage('donor')}
         onProfileClick={() => navigateToPage('profile')}
         onSubmit={handleDonorFormSubmit}
       />
@@ -397,7 +556,17 @@ function App() {
         userBloodType={userBloodType}
         onProfileClick={() => navigateToPage('profile')}
         onBack={() => navigateToPage('volunteerOrDonor')}
-        incomingAlerts={incomingAlerts}
+        incomingAlerts={incomingAlerts.map(alert => {
+          // Merge alert data with corresponding service request data (for rejection/acceptance status)
+          const correspondingRequest = serviceRequests.find(r => r.id === alert.id)
+          return {
+            ...alert,
+            acceptedByNeedy: correspondingRequest?.acceptedByNeedy || false,
+            rejectedByNeedy: correspondingRequest?.rejectedByNeedy || false,
+            rejectionReason: correspondingRequest?.rejectionReason || '',
+            acceptances: correspondingRequest?.acceptances || []
+          }
+        })}
         upcomingAlerts={upcomingAlerts}
         completedAlerts={completedAlerts}
         onAcceptAlert={handleAcceptAlert}
