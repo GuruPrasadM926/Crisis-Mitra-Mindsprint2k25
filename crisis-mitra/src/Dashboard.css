@@ -3,7 +3,7 @@
     min-width: 700px;
     display: flex;
     flex-direction: column;
-    background: linear-gradient(135deg, #af20fc 0%, #ff012c 100%);
+    background: linear-gradient(135deg, #51186f 0%, #01c4ff 100%);
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
         'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
         sans-serif;
@@ -21,9 +21,10 @@
     padding: 0 40px;
     box-sizing: border-box;
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
     align-items: center;
     width: 100%;
+    font-size: 40px;
 }
 
 .dashboard-header h1 {
@@ -98,7 +99,7 @@
 .dashboard-content {
     width: 100%;
     max-width: 400px;
-    background:radial-gradient(rgb(243, 243, 243), rgb(79, 141, 247));
+    background: radial-gradient(rgb(65, 98, 136), rgb(79, 141, 247));
     color: #000;
     border-radius: 10px;
     padding: 40px;
@@ -117,10 +118,10 @@
 }
 
 .role-title {
+    font-weight: bold;
     margin: 0;
-    color: #333;
-    font-size: 20px;
-    font-weight: 600;
+    color: #ffffff;
+    font-size: 30px;
 }
 
 .role-container {
@@ -134,8 +135,8 @@
     flex: 1;
     max-width: 200px;
     padding: 20px;
-    border: 2px solid #e0e0e0;
-    background: radial-gradient(rgb(243, 243, 243), rgb(79, 141, 247));
+    border: 2px solid #f9f9f9;
+    background: radial-gradient(rgb(76, 83, 155), rgb(98, 124, 168));
     border-radius: 8px;
     cursor: pointer;
     display: flex;
@@ -144,13 +145,13 @@
     justify-content: center;
     gap: 12px;
     transition: all 0.3s ease;
-    font-family: inherit;
-    font-size: 14px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-size: 15px;
 }
 
 .role-button:hover {
-    border-color: #667eea;
-    background:radial-gradient(rgb(243, 243, 243), rgb(169, 79, 247));
+    border-color: #fbfbfb;
+    background: radial-gradient(rgb(243, 243, 243), rgb(247, 141, 79));
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(102, 126, 234, 0.15);
 }
