@@ -87,5 +87,3 @@ This project includes `express`, `mongodb`, and `mongoose` in the dependencies, 
 ## License
 This project does not include a license file. Add a LICENSE if you plan to open-source it.
 
----
-If you'd like, I can also add a short CONTRIBUTING.md, a detailed architecture doc, or a server scaffold for the backend. What would you like next?
